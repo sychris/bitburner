@@ -1,7 +1,7 @@
 const settings = {
   homeRamReserved: 20,
   homeRamReservedBase: 20,
-  homeRamExtraRamReserved: 12,
+  homeRamExtraRamReserved: 24,
   homeRamBigMode: 64,
   minSecurityLevelOffset: 1,
   maxMoneyMultiplayer: 0.9,
