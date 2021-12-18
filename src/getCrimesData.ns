@@ -63,3 +63,5 @@ export async function main(ns) {
     ns.spawn(scriptToRunAfter, 1)
   }
 }
+
+// vim: set ft=javascript :

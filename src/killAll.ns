@@ -73,3 +73,5 @@ export async function main(ns) {
     ns.spawn('runHacking.ns', 1)
   }
 }
+
+// vim: set ft=javascript :

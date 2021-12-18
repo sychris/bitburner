@@ -29,3 +29,5 @@ export async function main(ns) {
     setItem,
   }
 }
+
+// vim: set ft=javascript :

@@ -332,3 +332,5 @@ export async function main(ns) {
     await ns.sleep(2500)
   }
 }
+
+// vim: set ft=javascript :

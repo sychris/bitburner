@@ -11,3 +11,5 @@ export async function main(ns) {
   await ns.grow(target, { threads, stock: true })
   ns.exit()
 }
+
+// vim: set ft=javascript :

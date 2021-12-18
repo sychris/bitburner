@@ -333,3 +333,5 @@ export async function main(ns) {
     await ns.sleep(weakenTime + 300)
   }
 }
+
+// vim: set ft=javascript :

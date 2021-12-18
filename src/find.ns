@@ -98,3 +98,5 @@ export async function main(ns) {
     ns.tprint('')
   }
 }
+
+// vim: set ft=javascript :

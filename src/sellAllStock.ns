@@ -63,3 +63,5 @@ export async function main(ns) {
     sellShorts(ns, stockSymbol)
   })
 }
+
+// vim: set ft=javascript :

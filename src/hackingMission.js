@@ -587,3 +587,5 @@
 
   main()
 })(document)
+
+// vim: set ft=javascript :
