@@ -1,17 +1,17 @@
 const baseUrl = 'https://raw.githubusercontent.com/kyechou/bitburner/master/src/'
 const filesToDownload = [
   'common.ns',
-  'mainHack.ns',
-  'spider.ns',
+  'find.ns',
   'grow.ns',
   'hack.ns',
-  'weaken.ns',
-  'playerServers.ns',
   'killAll.ns',
+  'mainHack.ns',
+  'playerServers.ns',
   'runHacking.ns',
-  'find.ns',
   'sellAllStock.ns',
+  'spider.ns',
   'stockMarketer.ns',
+  'weaken.ns',
 ]
 const valuesToRemove = ['BB_SERVER_MAP']
 
@@ -19,7 +19,6 @@ function localeHHMMSS(ms = 0) {
   if (!ms) {
     ms = new Date().getTime()
   }
-
   return new Date(ms).toLocaleTimeString()
 }
 

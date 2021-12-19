@@ -1,26 +1,9 @@
+import { getItem, setItem, localeHHMMSS } from 'common.ns'
+
 const settings = {
   keys: {
     crimesStop: 'BB_CRIMES_STOP',
   },
-  intervalToRecheck: 10 * 60 * 1000,
-}
-
-function getItem(key) {
-  let item = localStorage.getItem(key)
-
-  return item ? JSON.parse(item) : undefined
-}
-
-function setItem(key, value) {
-  localStorage.setItem(key, JSON.stringify(value))
-}
-
-function localeHHMMSS(ms = 0) {
-  if (!ms) {
-    ms = new Date().getTime()
-  }
-
-  return new Date(ms).toLocaleTimeString()
 }
 
 export async function main(ns) {

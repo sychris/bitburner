@@ -1,3 +1,5 @@
+import { getItem, setItem, localeHHMMSS } from 'common.ns'
+
 const settings = {
   keys: {
     buyEquipment: 'BB_BUY_EQUIPMENT',
@@ -6,16 +8,6 @@ const settings = {
     equipmentList: 'BB_EQUIPMENT_LIST',
     augumentationList: 'BB_AUGUMENTATION_LIST',
   },
-}
-
-function getItem(key) {
-  let item = localStorage.getItem(key)
-
-  return item ? JSON.parse(item) : undefined
-}
-
-function setItem(key, value) {
-  localStorage.setItem(key, JSON.stringify(value))
 }
 
 const gangMemberNamesList = [
@@ -52,14 +44,6 @@ const gangMemberNamesList = [
 ]
 
 const equipmentTypes = ['Weapon', 'Armor', 'Vehicle', 'Rootkit', 'Augmentation']
-
-function localeHHMMSS(ms = 0) {
-  if (!ms) {
-    ms = new Date().getTime()
-  }
-
-  return new Date(ms).toLocaleTimeString()
-}
 
 function getMemberNames(ns) {
   return ns.gang.getMemberNames()

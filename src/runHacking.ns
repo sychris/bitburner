@@ -1,10 +1,4 @@
-function localeHHMMSS(ms = 0) {
-  if (!ms) {
-    ms = new Date().getTime()
-  }
-
-  return new Date(ms).toLocaleTimeString()
-}
+import { localeHHMMSS } from 'common.ns'
 
 export async function main(ns) {
   ns.tprint(`[${localeHHMMSS()}] Starting runHacking.ns`)
@@ -15,12 +9,12 @@ export async function main(ns) {
     throw new Exception('Run the script from home')
   }
 
-  const homeRam = ns.getServerRam('home').shift()
+  const homeRam = ns.getServerMaxRam('home')
 
   if (homeRam >= 32) {
     ns.tprint(`[${localeHHMMSS()}] Spawning spider.ns`)
     await ns.run('spider.ns', 1, 'mainHack.ns')
-    await ns.sleep(3000)
+    await ns.sleep(1000)
     ns.tprint(`[${localeHHMMSS()}] Spawning playerServers.ns`)
     ns.spawn('playerServers.ns', 1)
   } else {
