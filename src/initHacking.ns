@@ -12,6 +12,20 @@ const filesToDownload = [
   'spider.ns',
   'stockMarketer.ns',
   'weaken.ns',
+  'browserAutoHack.js',
+  'commitCrime.ns',
+  'contracter.ns',
+  'gangFastAscender.ns',
+  'gangManager.ns',
+  'getCrimesData.ns',
+  'getCrimesData2.ns.js',
+  'hackingMission.js',
+  'karmaReducer.ns',
+  'repareGang.ns',
+  'sellAllStock.ns',
+  'stockMarketer.ns',
+  'stockMarketer4S.ns',
+  'hacknet-auto.script',
 ]
 const valuesToRemove = ['BB_SERVER_MAP']
 
