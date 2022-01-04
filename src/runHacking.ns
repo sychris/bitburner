@@ -15,7 +15,7 @@ export async function main(ns) {
     ns.tprint(`[${localeHHMMSS()}] Spawning spider.ns`)
     await ns.run('spider.ns', 1, 'mainHack.ns')
     await ns.asleep(1000)
-    ns.tprint(`[${localeHHMMSS()}] Spawning playerServers.ns`)
+    //ns.tprint(`[${localeHHMMSS()}] Spawning playerServers.ns`)
     //ns.spawn('playerServers.ns', 1)
   } else {
     ns.tprint(`[${localeHHMMSS()}] Spawning spider.ns`)
