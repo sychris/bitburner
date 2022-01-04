@@ -138,7 +138,7 @@ export async function main(ns) {
     ns.disableLog("stock.sell");
     while (true) {
         tendStocks(ns);
-        await ns.sleep(delay);
+        await ns.asleep(delay);
     }
 }
 
