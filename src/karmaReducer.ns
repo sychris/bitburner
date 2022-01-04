@@ -25,12 +25,12 @@ export async function main(ns) {
       continueCommitingCrime = false
     } else {
       while (ns.isBusy()) {
-        await ns.sleep(100)
+        await ns.asleep(100)
       }
 
       ns.tprint(`[${localeHHMMSS()}] Commiting crime: ${crimeToCommit}`)
       ns.commitCrime(crimeToCommit)
-      await ns.sleep(1000)
+      await ns.asleep(1000)
     }
   }
 
