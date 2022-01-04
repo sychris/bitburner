@@ -133,7 +133,7 @@ function buyStocks(ns, stocksToBuy) {
 export async function main(ns) {
     if (ns.args[2]) { var delay = ns.args[2]; } else { var delay = 60; };//delay in seconds
     var delay = delay * 1000;//change to ms
-    ns.disableLog("sleep");
+    ns.disableLog("asleep");
     ns.disableLog("stock.buy");
     ns.disableLog("stock.sell");
     while (true) {
