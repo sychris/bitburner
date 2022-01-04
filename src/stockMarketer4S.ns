@@ -166,16 +166,16 @@ export async function main(ns) {
       .filter((stockSymbol) => getStockInfo(ns, stockSymbol).haveAnyShares)
       .filter((stockSymbol, index) => stockSymbol !== stockSymbols[index])
       .forEach((stockSymbol) => sellUnderperforming(ns, stockSymbol))
-    await ns.sleep(5)
+    await ns.asleep(5)
 
     stockSymbols.forEach((stockSymbol) => sellWrongPosition(ns, stockSymbol))
-    await ns.sleep(5)
+    await ns.asleep(5)
 
     stockSymbols.forEach((stockSymbol) => buyNewShares(ns, stockSymbol))
-    await ns.sleep(5)
+    await ns.asleep(5)
 
     ns.print(`[${localeHHMMSS()}] After transactions: corpus: ${ns.nFormat(corpus, '$0.000a')}`)
-    await ns.sleep(3500)
+    await ns.asleep(3500)
     tickCounter++
   }
 }
