@@ -1,7 +1,7 @@
 import { localeHHMMSS } from 'common.ns'
 
 export async function main(ns) {
-  ns.tprint(`[${localeHHMMSS()}] Starting runHacking.ns`)
+  ns.tprint(`[${localeHHMMSS()}] Starting runHacking.js`)
 
   let hostname = ns.getHostname()
 
