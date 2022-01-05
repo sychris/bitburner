@@ -11,6 +11,11 @@ const scriptsToKill = [
   'weaken.ns',
   'playerServers.ns',
   'find.ns',
+  'grow.js',
+  'hack.js',
+  'weaken.js',
+  'runHacking.js',
+  'mainHacking.js',
 ]
 
 export async function main(ns) {
