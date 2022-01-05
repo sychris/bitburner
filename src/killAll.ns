@@ -16,6 +16,7 @@ const scriptsToKill = [
   'weaken.js',
   'runHacking.js',
   'mainHacking.js',
+  'monitor.js',
 ]
 
 export async function main(ns) {
