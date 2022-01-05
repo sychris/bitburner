@@ -26,6 +26,10 @@ const filesToDownload = [
   'stockMarketer.ns',
   'stockMarketer4S.ns',
   'hacknet-auto.script',
+  'grow.js',
+  'hack.js',
+  'weaken.js',
+  'mainHack.js',
 ]
 const valuesToRemove = ['BB_SERVER_MAP']
 
