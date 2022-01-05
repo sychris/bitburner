@@ -30,6 +30,7 @@ const filesToDownload = [
   'hack.js',
   'weaken.js',
   'mainHack.js',
+  'runHacking.js'
 ]
 const valuesToRemove = ['BB_SERVER_MAP']
 
@@ -62,7 +63,7 @@ export async function main(ns) {
   valuesToRemove.map((value) => localStorage.removeItem(value))
 
   ns.tprint(`[${localeHHMMSS()}] Spawning killAll.ns`)
-  ns.spawn('killAll.ns', 1, 'runHacking.ns')
+  ns.spawn('killAll.ns', 1, 'runHacking.js')
 }
 
 // vim: set ft=javascript :
