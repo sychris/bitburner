@@ -1,6 +1,6 @@
 export function settings() {
   return {
-    homeRamReserved: 20,
+    homeRamReserved: 200,
     homeRamReservedBase: 20,
     homeRamExtraRamReserved: 20,
     homeRamBigMode: 64,
@@ -49,7 +49,7 @@ export function localeHHMMSS(ms = 0) {
 export function getPlayerDetails(ns) {
   let portHacks = 0
   const hackPrograms = ['BruteSSH.exe', 'FTPCrack.exe', 'relaySMTP.exe',
-                        'HTTPWorm.exe', 'SQLInject.exe']
+    'HTTPWorm.exe', 'SQLInject.exe']
   hackPrograms.forEach((hackProgram) => {
     if (ns.fileExists(hackProgram, 'home')) {
       portHacks += 1
