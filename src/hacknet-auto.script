@@ -1,17 +1,17 @@
 /*
     hacknet-auto.script for Bitburner v0.47.2
     Winners don't use copyright
-    
+
     Latest version of this script should be at
         https://github.com/iuriguilherme/netscripts.d
     Bitburner should be at https://github.com/danielyxie/bitburner
-    
+
     This script requires 5.70 GB of RAM to run for 1 thread(s)
-    
-    This script will buy a Hacknet Node, fully upgrade it and then buy 
-    the next one in an infinite loop. If the cost of the next upgrade 
-    is higher than buying a new Hacknet Node, then a new one will be 
-    bought before the last one is upgraded. There is an option to set 
+
+    This script will buy a Hacknet Node, fully upgrade it and then buy
+    the next one in an infinite loop. If the cost of the next upgrade
+    is higher than buying a new Hacknet Node, then a new one will be
+    bought before the last one is upgraded. There is an option to set
     the budget limit.
 */
 
@@ -35,10 +35,10 @@ if (
     );
 }
 
-// If there are no Hacknet Nodes, we can't do anything, so the script 
+// If there are no Hacknet Nodes, we can't do anything, so the script
 // ends.
-while (hacknet.numNodes() > 0) {
-    // If there is not enough money, we wait for it instead of ending 
+while (hacknet.numNodes() > 0 && hacknet.numNodes() < 28) {
+    // If there is not enough money, we wait for it instead of ending
     // the loop.
     while (getServerMoneyAvailable("home") >= reserveMoney) {
         for (i = 0; i < hacknet.numNodes(); i++) {
@@ -76,9 +76,9 @@ while (hacknet.numNodes() > 0) {
                 );
             }
         } // END for (i = 0; i < hacknet.numNodes(); i++)
-        // Buy next Hacknet Node if the last one is already fully 
-        // upgraded. If for some reason the last Hacknet Node is fully 
-        // upgraded and the others don't, the loop above will still 
+        // Buy next Hacknet Node if the last one is already fully
+        // upgraded. If for some reason the last Hacknet Node is fully
+        // upgraded and the others don't, the loop above will still
         // attempt to upgrade them all.
         if (
             hacknet.getLevelUpgradeCost(
@@ -95,13 +95,13 @@ while (hacknet.numNodes() > 0) {
                 " because the last one couldn't be upgraded further."
             );
         } else if (
-            // Or buy the next Hacknet Node if the next upgrade is more 
+            // Or buy the next Hacknet Node if the next upgrade is more
             // expensive than buying a new Hacknet Node.
             hacknet.getLevelUpgradeCost(
-                (hacknet.numNodes() - 1), n) > 
+                (hacknet.numNodes() - 1), n) >
                 hacknet.getPurchaseNodeCost() &&
             hacknet.getRamUpgradeCost(
-                (hacknet.numNodes() - 1), n) > 
+                (hacknet.numNodes() - 1), n) >
                 hacknet.getPurchaseNodeCost() &&
             hacknet.getCoreUpgradeCost(
                 (hacknet.numNodes() - 1), n) >
