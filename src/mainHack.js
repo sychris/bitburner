@@ -276,8 +276,8 @@ export async function main(ns) {
       }
     }
 
-    await ns.kill('monitor.js', 'home', bestTarget)
-    await ns.exec('monitor.js', 'home', 1, bestTarget)
+    //await ns.kill('monitor.js', 'home', bestTarget)
+    //await ns.exec('monitor.js', 'home', 1, bestTarget)
     await ns.asleep(weakenTime + 300)
   }
 }
