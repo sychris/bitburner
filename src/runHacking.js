@@ -17,6 +17,12 @@ export async function main(ns) {
     await ns.asleep(1000)
     ns.tprint(`[${localeHHMMSS()}] Spawning hacknet-auto.script`)
     ns.spawn('hacknet-auto.script', 1)
+    await ns.asleep(120 * 1000)
+    ns.tprint(`[${localeHHMMSS()}] Spawning playerServer.js`)
+    ns.spawn('playerServer.js', 1)
+    await ns.asleep(300 * 1000)
+    ns.tprint(`[${localeHHMMSS()}] Spawning stockMarketer.js`)
+    ns.spawn('stockMarketer.js', 1)
   } else {
     ns.tprint(`[${localeHHMMSS()}] Spawning spider.js`)
     ns.spawn('spider.js', 1, 'mainHack.js')
