@@ -1,4 +1,4 @@
-import { getItem, setItem, localeHHMMSS } from 'common.ns'
+import { getItem, setItem, localeHHMMSS } from 'common.js'
 
 const settings = {
   keys: {
@@ -21,9 +21,9 @@ const settings = {
 }
 
 export async function main(ns) {
-  ns.tprint(`[${localeHHMMSS()}] Starting getCrimesData.ns`)
+  ns.tprint(`[${localeHHMMSS()}] Starting getCrimesData.js`)
 
-  const scriptToRunAfter = ns.args[0] || 'getCrimesData2.ns'
+  const scriptToRunAfter = ns.args[0] || 'getCrimesData2.js'
 
   let hostname = ns.getHostname()
 

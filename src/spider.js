@@ -3,13 +3,13 @@ import {
   setItem,
   localeHHMMSS,
   getPlayerDetails
-} from 'common.ns'
+} from 'common.js'
 
 const hackPrograms = ['BruteSSH.exe', 'FTPCrack.exe', 'relaySMTP.exe',
-                      'HTTPWorm.exe', 'SQLInject.exe']
+  'HTTPWorm.exe', 'SQLInject.exe']
 
 export async function main(ns) {
-  ns.tprint(`[${localeHHMMSS()}] Starting spider.ns`)
+  ns.tprint(`[${localeHHMMSS()}] Starting spider.js`)
 
   const scriptToRunAfter = ns.args[0]
 
@@ -40,7 +40,7 @@ export async function main(ns) {
     const playerDetails = getPlayerDetails(ns)
     if (!ns.hasRootAccess(host)) {
       if (serverMap.servers[host].ports <= playerDetails.portHacks &&
-          serverMap.servers[host].hackingLevel <= playerDetails.hackingLevel) {
+        serverMap.servers[host].hackingLevel <= playerDetails.hackingLevel) {
         hackPrograms.forEach((hackProgram) => {
           if (ns.fileExists(hackProgram, 'home')) {
             ns[hackProgram.split('.')[0].toLocaleLowerCase()](host)

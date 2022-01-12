@@ -1,4 +1,4 @@
-import { localeHHMMSS } from 'common.ns'
+import { localeHHMMSS } from 'common.js'
 
 let stockSymbols
 let corpus

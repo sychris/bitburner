@@ -1,4 +1,4 @@
-import { settings, getItem, localeHHMMSS } from 'common.ns'
+import { settings, getItem, localeHHMMSS } from 'common.js'
 
 function printPathToServer(servers, serverToFind) {
   if (serverToFind === 'home') return 'home'
@@ -25,7 +25,7 @@ function printPathToServer(servers, serverToFind) {
 }
 
 export async function main(ns) {
-  ns.tprint(`[${localeHHMMSS()}] Starting find.ns`)
+  ns.tprint(`[${localeHHMMSS()}] Starting find.js`)
 
   const serverToFind = ns.args[0]
 

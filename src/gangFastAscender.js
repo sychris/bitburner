@@ -1,4 +1,4 @@
-import { getItem, setItem, localeHHMMSS } from 'common.ns'
+import { getItem, setItem, localeHHMMSS } from 'common.js'
 
 const settings = {
   keys: {
@@ -128,7 +128,7 @@ function sortBy(ns, sortType = null, direction = DIRECTIONS.ASC) {
 
 export async function main(ns) {
   ns.disableLog('ALL')
-  ns.tprint(`[${localeHHMMSS()}] Starting gangFastAscender.ns`)
+  ns.tprint(`[${localeHHMMSS()}] Starting gangFastAscender.js`)
 
   let hostname = ns.getHostname()
 

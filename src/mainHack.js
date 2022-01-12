@@ -5,10 +5,10 @@ import {
   localeHHMMSS,
   getPlayerDetails,
   createUUID
-} from 'common.ns'
+} from 'common.js'
 
 const hackPrograms = ['BruteSSH.exe', 'FTPCrack.exe', 'relaySMTP.exe',
-                      'HTTPWorm.exe', 'SQLInject.exe']
+  'HTTPWorm.exe', 'SQLInject.exe']
 const hackScripts = ['hack.js', 'grow.js', 'weaken.js']
 
 function convertMSToHHMMSS(ms = 0) {
@@ -112,8 +112,8 @@ export async function main(ns) {
     }
 
     if (!serverMap || new Date().getTime() - serverMap.lastUpdate > settings().mapRefreshInterval) {
-      ns.tprint(`[${localeHHMMSS()}] Spawning spider.ns`)
-      ns.spawn('spider.ns', 1, 'mainHack.js')
+      ns.tprint(`[${localeHHMMSS()}] Spawning spider.js`)
+      ns.spawn('spider.js', 1, 'mainHack.js')
       ns.exit()
       return
     }

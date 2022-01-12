@@ -1,4 +1,4 @@
-import { localeHHMMSS } from 'common.ns'
+import { localeHHMMSS } from 'common.js'
 
 export async function main(ns) {
   ns.tprint(`[${localeHHMMSS()}] Starting runHacking.js`)
@@ -12,14 +12,14 @@ export async function main(ns) {
   const homeRam = ns.getServerMaxRam('home')
 
   if (homeRam >= 32) {
-    ns.tprint(`[${localeHHMMSS()}] Spawning spider.ns`)
-    await ns.run('spider.ns', 1, 'mainHack.js')
+    ns.tprint(`[${localeHHMMSS()}] Spawning spider.js`)
+    await ns.run('spider.js', 1, 'mainHack.js')
     await ns.asleep(1000)
-    //ns.tprint(`[${localeHHMMSS()}] Spawning playerServers.ns`)
-    //ns.spawn('playerServers.ns', 1)
+    //ns.tprint(`[${localeHHMMSS()}] Spawning playerServers.js`)
+    //ns.spawn('playerServers.js', 1)
   } else {
-    ns.tprint(`[${localeHHMMSS()}] Spawning spider.ns`)
-    ns.spawn('spider.ns', 1, 'mainHack.js')
+    ns.tprint(`[${localeHHMMSS()}] Spawning spider.js`)
+    ns.spawn('spider.js', 1, 'mainHack.js')
   }
 }
 

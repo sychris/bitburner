@@ -20,10 +20,9 @@ function tendStocks(ns) {
     const cashValue = ns.getPlayer().money;
     const totalValue = portfolioValue + cashValue;
     c.ounter += 1
-    if (c.ounter == 9 && delay > 30) {
+    if (c.ounter == 9) {
         ns.tprint(`Net worth: ${ns.nFormat(totalValue, "$0.000a")} = ${ns.nFormat(portfolioValue, "$0.0a")} stocks + ${ns.nFormat(cashValue, "$0.0a")} cash`);
-    } else if (c.ounter == 10) {
-        c.ounter = 0
+        c.ounter = 0;
     }
 }
 
@@ -107,10 +106,14 @@ function buyStocks(ns, stocksToBuy) {
 
     let transactions = 0;
     if (ns.args[0]) { var maxTransactions = ns.args[0]; } else { var maxTransactions = 4; };
-    if (ns.args[1]) { var savings = ns.args[1]; } else { var savings = 5000000 };
+    const allStocks = getAllStocks(ns);
+    const portfolioValue = getPortfolioValue(allStocks);
+    const cashValue = ns.getPlayer().money;
+    const totalValue = portfolioValue + cashValue;
+    if (ns.args[1]) { var savings = ns.args[1]; } else { var savings = (totalValue * 0.01) };
     for (const stock of bestStocks) {
         const moneyRemaining = ns.getPlayer().money;
-        // don't spend the last 5 million bux
+        // don't spend the last 1% bucks
         if (moneyRemaining < savings || transactions >= maxTransactions) {
             return;
         }
@@ -131,7 +134,7 @@ function buyStocks(ns, stocksToBuy) {
 }
 
 export async function main(ns) {
-    if (ns.args[2]) { var delay = ns.args[2]; } else { var delay = 60; };//delay in seconds
+    if (ns.args[2]) { var delay = ns.args[2]; } else { var delay = 6; };//delay in seconds
     var delay = delay * 1000;//change to ms
     ns.disableLog("asleep");
     ns.disableLog("stock.buy");

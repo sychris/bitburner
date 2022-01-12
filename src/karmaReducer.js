@@ -1,4 +1,4 @@
-import { getItem, setItem, localeHHMMSS } from 'common.ns'
+import { getItem, setItem, localeHHMMSS } from 'common.js'
 
 const settings = {
   keys: {
@@ -7,7 +7,7 @@ const settings = {
 }
 
 export async function main(ns) {
-  ns.tprint(`[${localeHHMMSS()}] Starting karmaReducer.ns`)
+  ns.tprint(`[${localeHHMMSS()}] Starting karmaReducer.js`)
 
   let hostname = ns.getHostname()
 

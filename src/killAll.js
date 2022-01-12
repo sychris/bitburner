@@ -1,16 +1,16 @@
-import { settings, getItem, localeHHMMSS } from 'common.ns'
+import { settings, getItem, localeHHMMSS } from 'common.js'
 
 const scriptsToKill = [
-  'start.ns',
-  'initHacking.ns',
-  'runHacking.ns',
-  'mainHack.ns',
-  'spider.ns',
-  'grow.ns',
-  'hack.ns',
-  'weaken.ns',
-  'playerServers.ns',
-  'find.ns',
+  'start.js',
+  'initHacking.js',
+  'runHacking.js',
+  'mainHack.js',
+  'spider.js',
+  'grow.js',
+  'hack.js',
+  'weaken.js',
+  'playerServers.js',
+  'find.js',
   'grow.js',
   'hack.js',
   'weaken.js',
@@ -20,7 +20,7 @@ const scriptsToKill = [
 ]
 
 export async function main(ns) {
-  ns.tprint(`[${localeHHMMSS()}] Starting killAll.ns`)
+  ns.tprint(`[${localeHHMMSS()}] Starting killAll.js`)
 
   const scriptToRunAfter = ns.args[0]
 

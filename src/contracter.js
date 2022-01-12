@@ -1,6 +1,6 @@
 // Based on https://github.com/danielyxie/bitburner/blob/master/src/data/codingcontracttypes.ts
 
-import { settings, getItem, localeHHMMSS } from 'common.ns'
+import { settings, getItem, localeHHMMSS } from 'common.js'
 
 function convert2DArrayToString(arr) {
   var components = []
@@ -385,7 +385,7 @@ function findAnswer(contract) {
 }
 
 export async function main(ns) {
-  ns.tprint(`[${localeHHMMSS()}] Starting contracter.ns`)
+  ns.tprint(`[${localeHHMMSS()}] Starting contracter.js`)
 
   let hostname = ns.getHostname()
 
