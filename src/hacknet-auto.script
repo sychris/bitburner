@@ -16,7 +16,7 @@
 */
 
 // We will not buy anything if there's less money than this ammount
-reserveMoney = 100000;
+reserveMoney = 0;
 // Number of times to upgrade (shouldn't have to change this)
 n = 1;
 
@@ -99,13 +99,13 @@ while (hacknet.numNodes() > 0 && hacknet.numNodes() < 28) {
             // expensive than buying a new Hacknet Node.
             hacknet.getLevelUpgradeCost(
                 (hacknet.numNodes() - 1), n) >
-                hacknet.getPurchaseNodeCost() &&
+            hacknet.getPurchaseNodeCost() &&
             hacknet.getRamUpgradeCost(
                 (hacknet.numNodes() - 1), n) >
-                hacknet.getPurchaseNodeCost() &&
+            hacknet.getPurchaseNodeCost() &&
             hacknet.getCoreUpgradeCost(
                 (hacknet.numNodes() - 1), n) >
-                 hacknet.getPurchaseNodeCost()
+            hacknet.getPurchaseNodeCost()
         ) {
             hacknet.purchaseNode();
             print(
