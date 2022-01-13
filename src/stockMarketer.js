@@ -110,7 +110,7 @@ function buyStocks(ns, stocksToBuy) {
     const portfolioValue = getPortfolioValue(allStocks);
     const cashValue = ns.getPlayer().money;
     const totalValue = portfolioValue + cashValue;
-    if (ns.args[1]) { var savings = ns.args[1]; } else { var savings = (totalValue * 0.01) };
+    if (ns.args[1]) { var savings = ns.args[1]; } else { var savings = (totalValue * 0.1) };
     for (const stock of bestStocks) {
         const moneyRemaining = ns.getPlayer().money;
         // don't spend the last 1% bucks
