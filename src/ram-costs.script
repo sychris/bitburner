@@ -1,0 +1,26 @@
+var serverCostList = ("\n"
++ "server with 2 ram cost: 110,000 / $110k\n"
++ "server with 4 ram cost: 220,000 / $220k\n"
++ "server with 8 ram cost: 440,000 / $440k\n"
++ "server with 16 ram cost: 880,000 / $880k\n"
++ "server with 32 ram cost: 1,760,000 / $2m\n"
++ "server with 64 ram cost: 3,520,000 / $4m\n"
++ "server with 128 ram cost: 7,040,000 / $7m\n"
++ "server with 256 ram cost: 14,080,000 / $14m\n"
++ "server with 512 ram cost: 28,160,000 / $28m\n"
++ "server with 1024 ram cost: 56,320,000 / $56m\n"
++ "server with 2048 ram cost: 112,640,000 / $113m\n"
++ "server with 4096 ram cost: 225,280,000 / $225m\n"
++ "server with 8192 ram cost: 450,560,000 / $451m\n"
++ "server with 16384 ram cost: 901,120,000 / $901m\n"
++ "server with 32768 ram cost: 1,802,240,000 / $2b\n"
++ "server with 65536 ram cost: 3,604,480,000 / $4b\n"
++ "server with 131072 ram cost: 7,208,960,000 / $7b\n"
++ "server with 262144 ram cost: 14,417,920,000 / $14b\n"
++ "server with 524288 ram cost: 28,835,840,000 / $29b\n"
++ "server with 1048576 ram cost: 57,671,680,000 / $58b\n"
+)
+
+tprint(serverCostList);
+// found at https://www.reddit.com/r/Bitburner/comments/gamhxl/server_cost_list_and_servercostlistscript/
+// dunno if the values are correct
