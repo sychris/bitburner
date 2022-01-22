@@ -19,7 +19,7 @@ export function settings() {
     },
 
     maxPlayerServers: 25,
-    gbRamCost: 55000,
+    gbRamCost: 550000, //55000, bit node 5
     maxGbRam: 1048576,
     minGbRam: 64,
     totalMoneyAllocation: 0.9,
