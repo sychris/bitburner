@@ -20,7 +20,7 @@ function tendStocks(ns) {
     const cashValue = ns.getPlayer().money;
     const totalValue = portfolioValue + cashValue;
     c.ounter += 1
-    if (c.ounter == 9) {
+    if (c.ounter == 49) {
         ns.tprint(`Net worth: ${ns.nFormat(totalValue, "$0.000a")} = ${ns.nFormat(portfolioValue, "$0.0a")} stocks + ${ns.nFormat(cashValue, "$0.0a")} cash`);
         c.ounter = 0;
     }
