@@ -69,7 +69,7 @@ export async function main(ns) {
 
       if (targetRam === settings().minGbRam) {
         while (ns.getServerMoneyAvailable('home') * settings().totalMoneyAllocation
-          >= targetRam * settings().gbRamCost * settings().maxPlayerServers) {
+          >= ns.getPurchasedServerCost(targetRam) * settings().maxPlayerServers) {
           targetRam *= 2
         }
 
@@ -80,7 +80,7 @@ export async function main(ns) {
       targetRam = Math.min(targetRam, settings().maxGbRam)
 
       if (ns.getServerMoneyAvailable('home') * settings().totalMoneyAllocation
-        >= targetRam * settings().gbRamCost) {
+        >= ns.getPurchasedServerCost(targetRam)) {
         let hostname = `pserv-${targetRam}-${createUUID()}`
         hostname = ns.purchaseServer(hostname, targetRam)
 
@@ -105,7 +105,7 @@ export async function main(ns) {
 
       if (smallestCurrentServer === biggestCurrentServer) {
         while (ns.getServerMoneyAvailable('home') * settings().totalMoneyAllocation
-          >= targetRam * settings().gbRamCost) {
+          >= ns.getPurchasedServerCost(targetRam)) {
           targetRam *= 4
         }
 
@@ -123,7 +123,7 @@ export async function main(ns) {
 
           if (targetRam > ns.getServerMaxRam(purchasedServers[0])) {
             if (ns.getServerMoneyAvailable('home') * settings().totalMoneyAllocation
-              >= targetRam * settings().gbRamCost) {
+              >= ns.getPurchasedServerCost(targetRam)) {
               let hostname = `pserv-${targetRam}-${createUUID()}`
 
               await ns.killall(purchasedServers[0])
