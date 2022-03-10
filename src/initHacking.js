@@ -32,6 +32,7 @@ const filesToDownload = [
   'mainHack.js',
   'runHacking.js',
   'monitor.js',
+  'sellHashes.js',
 ]
 const valuesToRemove = ['BB_SERVER_MAP']
 
