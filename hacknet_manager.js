@@ -101,11 +101,12 @@ function upgrade_lowest_level(ns) {
 }
 
 function purchase_node(ns) {
-  if (ns.hacknet.maxNumNodes() < ns.hacknet.numNodes()) {
+  if (ns.hacknet.numNodes() < ns.hacknet.maxNumNodes()) {
     let purchase_cost = ns.hacknet.getPurchaseNodeCost()
     let player_money = ns.getPlayer().money
-    let total_cash_savings = (getPortfolioValue(getAllStocks(ns)) + player_money) * 0.2
-    if (purchase_cost < player_money && (player_money - purchase_cost) > total_cash_savings) {
+    //let total_cash_savings = (getPortfolioValue(getAllStocks(ns)) + player_money) * 0.2
+    //if (purchase_cost < player_money && (player_money - purchase_cost) > total_cash_savings) {
+    if (purchase_cost < player_money) {
       ns.hacknet.purchaseNode()
       ns.tprint(`[${localeHHMMSS()}] Bought node`)
       return true
