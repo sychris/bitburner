@@ -140,7 +140,6 @@ export async function main(ns) {
       await ns.asleep(5)
     }
     while (upgrade_lowest_level(ns)) {
-      ns.tprint(`[${localeHHMMSS()}] Upgraded level`)
       await ns.asleep(5)
     }
     await ns.asleep(5000)
