@@ -46,10 +46,11 @@ function upgrade_lowest_core(ns) {
 
   let upgrade_cost = ns.hacknet.getCoreUpgradeCost(lowest_node_index, 1)
   let player_money = ns.getPlayer().money
-  let total_cash_savings = (getPortfolioValue(getAllStocks(ns)) + player_money) * 0.2
-  if (upgrade_cost < player_money && (player_money - upgrade_cost) > total_cash_savings) {
+  //let total_cash_savings = (getPortfolioValue(getAllStocks(ns)) + player_money) * 0.2
+  //if (upgrade_cost < player_money && (player_money - upgrade_cost) > total_cash_savings) {
+  if (upgrade_cost < player_money) {
     ns.hacknet.upgradeCore(lowest_node_index, 1)
-    ns.tprint(`[${localeHHMMSS()}] Upgraded ${lowest_node_index} core, Total money savings: ${total_cash_savings}, Money: ${player_money}, Cost: ${upgrade_cost}`)
+    ns.tprint(`[${localeHHMMSS()}] Upgraded ${lowest_node_index} core`)
     return true
   }
   return false
@@ -67,10 +68,11 @@ function upgrade_lowest_ram(ns) {
 
   let upgrade_cost = ns.hacknet.getRamUpgradeCost(lowest_node_index, 1)
   let player_money = ns.getPlayer().money
-  let total_cash_savings = (getPortfolioValue(getAllStocks(ns)) + player_money) * 0.2
-  if (upgrade_cost < player_money && (player_money - upgrade_cost) > total_cash_savings) {
+  //let total_cash_savings = (getPortfolioValue(getAllStocks(ns)) + player_money) * 0.2
+  //if (upgrade_cost < player_money && (player_money - upgrade_cost) > total_cash_savings) {
+  if (upgrade_cost < player_money) {
     ns.hacknet.upgradeRam(lowest_node_index, 1)
-    ns.tprint(`[${localeHHMMSS()}] Upgraded ${lowest_node_index} ram, Total money savings: ${total_cash_savings}, Money: ${player_money}, Cost: ${upgrade_cost}`)
+    ns.tprint(`[${localeHHMMSS()}] Upgraded ${lowest_node_index} ram`)
     return true
   }
   return false
@@ -88,8 +90,9 @@ function upgrade_lowest_level(ns) {
 
   let upgrade_cost = ns.hacknet.getLevelUpgradeCost(lowest_node_index, 1)
   let player_money = ns.getPlayer().money
-  let total_cash_savings = (getPortfolioValue(getAllStocks(ns)) + player_money) * 0.2
-  if (upgrade_cost < player_money && (player_money - upgrade_cost) > total_cash_savings) {
+  //let total_cash_savings = (getPortfolioValue(getAllStocks(ns)) + player_money) * 0.2
+  //if (upgrade_cost < player_money && (player_money - upgrade_cost) > total_cash_savings) {
+  if (upgrade_cost < player_money) {
     ns.hacknet.upgradeLevel(lowest_node_index, 1)
     ns.tprint(`[${localeHHMMSS()}] Upgraded ${lowest_node_index} level`)
     return true
