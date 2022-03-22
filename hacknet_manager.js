@@ -65,7 +65,7 @@ function upgrade_lowest_ram(ns) {
     }
   }
 
-  let upgrade_cost = ns.hacknet.getCoreUpgradeCost(lowest_node_index, 1)
+  let upgrade_cost = ns.hacknet.getRamUpgradeCost(lowest_node_index, 1)
   let player_money = ns.getPlayer().money
   let total_cash_savings = (getPortfolioValue(getAllStocks(ns)) + player_money) * 0.2
   if (upgrade_cost < player_money && (player_money - upgrade_cost) > total_cash_savings) {
