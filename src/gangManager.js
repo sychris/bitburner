@@ -41,6 +41,7 @@ const gangMemberNamesList = [
   'Frank Costello',
   'Hector Barbossa',
   'Xenomorph',
+  'myg',
 ]
 
 const equipmentTypes = ['Weapon', 'Armor', 'Vehicle', 'Rootkit', 'Augmentation']

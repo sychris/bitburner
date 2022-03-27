@@ -41,6 +41,7 @@ async function getHackableServers(ns, servers) {
     .filter((hostname) => servers[hostname].ports <= playerDetails.portHacks ||
       ns.hasRootAccess(hostname))
     .filter((hostname) => servers[hostname].ram >= 2)
+    .filter((hostname) => !/hacknet/.test(hostname))
 
   for (const hostname of hackableServers) {
     if (hostname === 'home') continue;
