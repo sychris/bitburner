@@ -12,4 +12,4 @@ export async function main(ns) {
   ns.exit()
 }
 
-// vim: set ft=javascript :
+

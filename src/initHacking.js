@@ -67,4 +67,4 @@ export async function main(ns) {
   ns.spawn('killAll.js', 1, 'runHacking.js')
 }
 
-// vim: set ft=javascript :
+

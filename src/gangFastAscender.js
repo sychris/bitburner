@@ -337,4 +337,4 @@ export async function main(ns) {
   ns.tprint(`[${localeHHMMSS()}] Finished, exiting`)
 }
 
-// vim: set ft=javascript :
+

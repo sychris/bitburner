@@ -144,5 +144,3 @@ export async function main(ns) {
         await ns.asleep(delay);
     }
 }
-
-// vim: set ft=javascript :

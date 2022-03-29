@@ -11,5 +11,3 @@ export async function main(ns) {
   await ns.weaken(target, { threads, stock: true })
   ns.exit()
 }
-
-// vim: set ft=javascript :

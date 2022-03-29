@@ -37,4 +37,4 @@ export async function main(ns) {
   setItem(settings.keys.crimesStop, false)
 }
 
-// vim: set ft=javascript :
+

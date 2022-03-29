@@ -31,4 +31,4 @@ export async function main(ns) {
   ns.tprint('Done')
 }
 
-// vim: set ft=javascript :
+

@@ -179,5 +179,3 @@ export async function main(ns) {
     tickCounter++
   }
 }
-
-// vim: set ft=javascript :
