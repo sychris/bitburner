@@ -289,7 +289,9 @@ export async function main(ns) {
       batch.growCycles = growCycles
       batch.weakenCycles = weakenCycles
       batch.totalMemRequired = hackCycles * 1.7 + (growCycles + weakenCycles) * 1.75
-      let stopBatchingTime = Date.now()
+      let batchStart = Date.now()
+      let batchInterval = 100
+
 
       ns.tprint(`[${localeHHMMSS()}]  Cycles ratio: ${hackCycles} hack cycles; ${growCycles} grow cycles; ${weakenCycles} weaken cycles`)
 
@@ -297,8 +299,8 @@ export async function main(ns) {
 
       for (let i = 0; i < hackableServers.length; i++) {
         const server = serverMap.servers[hackableServers[i]]
-        if (Date.now() > stopBatchingTime + growTime + growDelay - 1000) { break; } //our batching is taking way to long for the best server
-        if (hackDelay > stopBatchingTime + batchCount * 1000) { break; } //we are going to start overlapping hacks no good
+        if (Date.now() > batchStart + growTime + growDelay - batchInterval) { break; } //our batching is taking way to long for the best server
+        if (hackDelay > batchStart + batchCount * batchInterval) { break; } //we are going to start overlapping hacks no good
         if (server.ram > batch.totalMemRequired) {
 
           let serverBatchCount = Math.max(0,Math.floor(server.ram / batch.totalMemRequired))
@@ -342,11 +344,11 @@ export async function main(ns) {
 
     await ns.kill('monitor.js', 'home', bestTarget)
     await ns.exec('monitor.js', 'home', 1, bestTarget)
-    await ns.asleep(weakenTime + (batchCount * 1000) + 300)
+    await ns.asleep(weakenTime + (batchCount * batchTimings) + 300)
   }
 }
-async function runFullBatch(ns, batch, batchCount, server, hackDelay, growDelay, bestTarget) {
-  let batchDelay = batchCount * 1000 //so each batch hits 1 second after each other
+async function runFullBatch(ns, batch, batchCount,batchInterval, server, hackDelay, growDelay, bestTarget) {
+  let batchDelay = batchCount * batchInterval //so each batch hits 1 second after each other
   //dont bother with all the memory stuff we know it will all fit
   await ns.exec('hack.js', server.host, batch.hackCycles, bestTarget, batch.hackCycles, hackDelay+batchDelay, createUUID())
   await ns.exec('grow.js', server.host, batch.growCycles, bestTarget, batch.growCycles, growDelay + batchDelay, createUUID())
