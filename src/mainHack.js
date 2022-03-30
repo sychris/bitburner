@@ -151,6 +151,7 @@ export async function main(ns) {
     let weakenCycles = 0
     let multiRun = false
     let batchCount = 0
+    let batchInterval = 100
 
     //appears to be setting hack and grow cycles to max allowable by ram availible
     for (let i = 0; i < hackableServers.length; i++) {
@@ -290,7 +291,7 @@ export async function main(ns) {
       batch.weakenCycles = weakenCycles
       batch.totalMemRequired = hackCycles * 1.7 + (growCycles + weakenCycles) * 1.75
       let batchStart = Date.now()
-      let batchInterval = 100
+
 
 
       ns.tprint(`[${localeHHMMSS()}]  Cycles ratio: ${hackCycles} hack cycles; ${growCycles} grow cycles; ${weakenCycles} weaken cycles`)
@@ -300,7 +301,7 @@ export async function main(ns) {
       for (let i = 0; i < hackableServers.length; i++) {
         const server = serverMap.servers[hackableServers[i]]
         if (Date.now() > batchStart + growTime + growDelay - batchInterval) { break; } //our batching is taking way to long for the best server
-        if (hackDelay > batchStart + batchCount * batchInterval) { break; } //we are going to start overlapping hacks no good
+        if (Date.now() + hackDelay < batchStart + batchCount * batchInterval) { break; } //we are going to start overlapping hacks no good
         await ns.asleep(10)
         if (server.ram > batch.totalMemRequired) {
 
@@ -345,7 +346,7 @@ export async function main(ns) {
 
     await ns.kill('monitor.js', 'home', bestTarget)
     await ns.exec('monitor.js', 'home', 1, bestTarget)
-    await ns.asleep(weakenTime + (batchCount * batchTimings) + 300)
+    await ns.asleep(weakenTime + (batchCount * batchInterval) + 300)
   }
 }
 async function runFullBatch(ns, batch, batchCount, batchInterval, server, hackDelay, growDelay, bestTarget) {
