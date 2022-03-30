@@ -149,6 +149,8 @@ export async function main(ns) {
     let hackCycles = 0
     let growCycles = 0
     let weakenCycles = 0
+    let multiRun = false
+    let batchCount = 0
 
     //appears to be setting hack and grow cycles to max allowable by ram availible
     for (let i = 0; i < hackableServers.length; i++) {
@@ -174,6 +176,7 @@ export async function main(ns) {
       `[${localeHHMMSS()}] Time to: hack: ${convertMSToHHMMSS(hackTime)}; grow: ${convertMSToHHMMSS(growTime)}; weaken: ${convertMSToHHMMSS(weakenTime)}`
     )
     ns.tprint(`[${localeHHMMSS()}] Delays: ${convertMSToHHMMSS(hackDelay)} for hacks, ${convertMSToHHMMSS(growDelay)} for grows`)
+
 
 
     if (action === 'weaken') {
@@ -248,6 +251,7 @@ export async function main(ns) {
         if (memMaxGrowWeaken > growWeakenCyclesForMaxHack) {
           growCycles = MaxGrowthCyclesNeededForHack
           weakenCycles = maxWeakenCycles
+          multiRun = true
         } else {
 
           //this seams to be here so theres still enough hack cycles after we balance the ratios later to still fully hack the server
@@ -279,13 +283,34 @@ export async function main(ns) {
         hackCycles -= Math.ceil((weakenCycles * 1.75) / 1.7)
       }
 
-      ns.tprint(`[${localeHHMMSS()}] Cycles ratio: ${hackCycles} hack cycles; ${growCycles} grow cycles; ${weakenCycles} weaken cycles`)
+
+      var batch = new Object();
+      batch.hackCycles = hackCycles
+      batch.growCycles = growCycles
+      batch.weakenCycles = weakenCycles
+      batch.totalMemRequired = hackCycles * 1.7 + (growCycles + weakenCycles) * 1.75
+      let stopBatchingTime = Date.now() + growTime + growDelay
+
+      ns.tprint(`[${localeHHMMSS()}]  Cycles ratio: ${hackCycles} hack cycles; ${growCycles} grow cycles; ${weakenCycles} weaken cycles`)
+
+
 
       for (let i = 0; i < hackableServers.length; i++) {
         const server = serverMap.servers[hackableServers[i]]
+        if(Date.now() > stopBatchingTime){ break; }
+        if (server.ram > batch.totalMemRequired) {
+
+          let serverBatchCount = Math.max(0,Math.floor(server.ram / batch.totalMemRequired))
+          while (serverBatchCount > 0) {
+            batchCount += 1
+            await runFullBatch(ns, batch, batchCount, server, hackDelay, growDelay, bestTarget)
+            serverBatchCount--
+            await ns.asleep(10)
+          }
+        }
+
         let cyclesFittable = Math.max(0, Math.floor(server.ram / 1.7))
         const cyclesToRun = Math.max(0, Math.min(cyclesFittable, hackCycles))
-
         if (hackCycles) {
           await ns.exec('hack.js', server.host, cyclesToRun, bestTarget, cyclesToRun, hackDelay, createUUID())
           hackCycles -= cyclesToRun
@@ -305,18 +330,26 @@ export async function main(ns) {
 
         if (cyclesFittable && weakenCycles) {
           const weakenCyclesToRun = Math.min(weakenCycles, cyclesFittable)
-          await ns.exec('weaken.js', server.host, cyclesFittable, bestTarget, cyclesFittable, 0, createUUID())
+          await ns.exec('weaken.js', server.host, weakenCyclesToRun, bestTarget, weakenCyclesToRun, 0, createUUID())
           weakenCycles -= weakenCyclesToRun
           cyclesFittable -= weakenCycles
         }
+        ns.tprint(`[${localeHHMMSS()}] server memory to batch ${batch.totalMemRequired} batch's run: ${batchCount} `)
 
       }
     }
 
     await ns.kill('monitor.js', 'home', bestTarget)
     await ns.exec('monitor.js', 'home', 1, bestTarget)
-    await ns.asleep(weakenTime + 300)
+    await ns.asleep(weakenTime + (batchCount * 1000) + 300)
   }
+}
+async function runFullBatch(ns, batch, batchCount, server, hackDelay, growDelay, bestTarget) {
+  let batchDelay = batchCount * 1000 //so each batch hits 1 second after each other
+  //dont bother with all the memory stuff we know it will all fit
+  await ns.exec('hack.js', server.host, batch.hackCycles, bestTarget, batch.hackCycles, hackDelay+batchDelay, createUUID())
+  await ns.exec('grow.js', server.host, batch.growCycles, bestTarget, batch.growCycles, growDelay + batchDelay, createUUID())
+  await ns.exec('weaken.js', server.host, batch.weakenCycles, bestTarget, batch.weakenCycles, batchDelay, createUUID())
 }
 
 
