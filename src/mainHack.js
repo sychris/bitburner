@@ -289,7 +289,7 @@ export async function main(ns) {
       batch.growCycles = growCycles
       batch.weakenCycles = weakenCycles
       batch.totalMemRequired = hackCycles * 1.7 + (growCycles + weakenCycles) * 1.75
-      let stopBatchingTime = Date.now() + growTime + growDelay
+      let stopBatchingTime = Date.now()
 
       ns.tprint(`[${localeHHMMSS()}]  Cycles ratio: ${hackCycles} hack cycles; ${growCycles} grow cycles; ${weakenCycles} weaken cycles`)
 
@@ -297,7 +297,8 @@ export async function main(ns) {
 
       for (let i = 0; i < hackableServers.length; i++) {
         const server = serverMap.servers[hackableServers[i]]
-        if(Date.now() > stopBatchingTime){ break; }
+        if (Date.now() > stopBatchingTime + growTime + growDelay - 1000) { break; } //our batching is taking way to long for the best server
+        if (hackDelay > stopBatchingTime + batchCount * 1000) { break; } //we are going to start overlapping hacks no good
         if (server.ram > batch.totalMemRequired) {
 
           let serverBatchCount = Math.max(0,Math.floor(server.ram / batch.totalMemRequired))
