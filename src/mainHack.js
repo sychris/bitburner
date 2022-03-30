@@ -301,14 +301,15 @@ export async function main(ns) {
         const server = serverMap.servers[hackableServers[i]]
         if (Date.now() > batchStart + growTime + growDelay - batchInterval) { break; } //our batching is taking way to long for the best server
         if (hackDelay > batchStart + batchCount * batchInterval) { break; } //we are going to start overlapping hacks no good
+        await ns.asleep(10)
         if (server.ram > batch.totalMemRequired) {
 
           let serverBatchCount = Math.max(0,Math.floor(server.ram / batch.totalMemRequired))
           while (serverBatchCount > 0) {
             batchCount += 1
-            await runFullBatch(ns, batch, batchCount, server, hackDelay, growDelay, bestTarget)
+            await runFullBatch(ns, batch, batchCount, batchInterval, server, hackDelay, growDelay, bestTarget)
             serverBatchCount--
-            await ns.asleep(10)
+
           }
         }
 
@@ -347,10 +348,10 @@ export async function main(ns) {
     await ns.asleep(weakenTime + (batchCount * batchTimings) + 300)
   }
 }
-async function runFullBatch(ns, batch, batchCount,batchInterval, server, hackDelay, growDelay, bestTarget) {
-  let batchDelay = batchCount * batchInterval //so each batch hits 1 second after each other
+async function runFullBatch(ns, batch, batchCount, batchInterval, server, hackDelay, growDelay, bestTarget) {
+  let batchDelay = batchCount * batchInterval //so each batch hits batchInterval after each other
   //dont bother with all the memory stuff we know it will all fit
-  await ns.exec('hack.js', server.host, batch.hackCycles, bestTarget, batch.hackCycles, hackDelay+batchDelay, createUUID())
+  await ns.exec('hack.js', server.host, batch.hackCycles, bestTarget, batch.hackCycles, hackDelay + batchDelay, createUUID())
   await ns.exec('grow.js', server.host, batch.growCycles, bestTarget, batch.growCycles, growDelay + batchDelay, createUUID())
   await ns.exec('weaken.js', server.host, batch.weakenCycles, bestTarget, batch.weakenCycles, batchDelay, createUUID())
 }
