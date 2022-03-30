@@ -1,3 +1,4 @@
+/** @type import(".").NS */let ns = null;
 import {
   settings,
   getItem,
@@ -25,6 +26,7 @@ function numberWithCommas(x) {
   return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',')
 }
 
+//changes: {hack: 0.002,grow: 0.004,weaken: 0.05,},
 function weakenCyclesForGrow(growCycles) {
   return Math.max(0, Math.ceil(growCycles * (settings().changes.grow / settings().changes.weaken)))
 }
@@ -71,7 +73,8 @@ function findTargetServer(ns, serversList, servers, serverExtraData) {
     .filter((hostname) => ns.getWeakenTime(hostname) < settings().maxWeakenTime)
 
   let weightedServers = serversList.map((hostname) => {
-    const fullHackCycles = Math.ceil(100 / Math.max(0.00000001, ns.hackAnalyze(hostname)))
+
+    const fullHackCycles = Math.ceil(ns.hackAnalyzeThreads(hostname, servers[hostname].maxMoney * (settings().maxServerValueToHack / 100)))
 
     serverExtraData[hostname] = {
       fullHackCycles,
@@ -147,13 +150,16 @@ export async function main(ns) {
     let growCycles = 0
     let weakenCycles = 0
 
+    //appears to be setting hack and grow cycles to max allowable by ram availible
     for (let i = 0; i < hackableServers.length; i++) {
       const server = serverMap.servers[hackableServers[i]]
       hackCycles += Math.floor(server.ram / 1.7)
       growCycles += Math.floor(server.ram / 1.75)
     }
+    //setting weaken cylcles to max allowable values
     weakenCycles = growCycles
 
+    //outputing status
     ns.tprint(
       `[${localeHHMMSS()}] Selected ${bestTarget} for a target. Planning to ${action} the server. Will wake up around ${localeHHMMSS(
         new Date().getTime() + weakenTime + 300
@@ -168,6 +174,7 @@ export async function main(ns) {
       `[${localeHHMMSS()}] Time to: hack: ${convertMSToHHMMSS(hackTime)}; grow: ${convertMSToHHMMSS(growTime)}; weaken: ${convertMSToHHMMSS(weakenTime)}`
     )
     ns.tprint(`[${localeHHMMSS()}] Delays: ${convertMSToHHMMSS(hackDelay)} for hacks, ${convertMSToHHMMSS(growDelay)} for grows`)
+
 
     if (action === 'weaken') {
       if (settings().changes.weaken * weakenCycles > securityLevel - serverMap.servers[bestTarget].minSecurityLevel) {
@@ -225,22 +232,48 @@ export async function main(ns) {
           weakenCycles -= cyclesFittable
         }
       }
-    } else {
+    } else { //action === 'hack'
+      //should be set in findTargetServer defigned as const serverExtraData = {}
+      ns.tprint("debug hackCycles: " + hackCycles +"serverExtraData[bestTarget].fullHackCycles: "+serverExtraData[bestTarget].fullHackCycles)
       if (hackCycles > serverExtraData[bestTarget].fullHackCycles) {
         hackCycles = serverExtraData[bestTarget].fullHackCycles
+        let memMaxGrowWeaken = growCycles //max avaible grow and weaken cycles in ram
 
-        if (hackCycles * 100 < growCycles) {
-          hackCycles *= 10
+        //hackAnalyze(host: string): number;Returns the part of the specified server’s money you will steal with a single thread hack
+        let percentHacked = ns.hackAnalyze(bestTarget) * hackCycles *100
+        //growthAnalyze(host: string, growthAmount: number, cores?: number): number; The amount of grow calls needed to grow the specified server by the specified amount
+        let MaxGrowthCyclesNeededForHack = Math.ceil(ns.growthAnalyze(bestTarget,100/percentHacked))
+        let maxWeakenCycles = Math.ceil(weakenCyclesForGrow(MaxGrowthCyclesNeededForHack) + weakenCyclesForHack(hackCycles))
+        let growWeakenCyclesForMaxHack = MaxGrowthCyclesNeededForHack + maxWeakenCycles
+        if (memMaxGrowWeaken > growWeakenCyclesForMaxHack) {
+          growCycles = MaxGrowthCyclesNeededForHack
+          weakenCycles = maxWeakenCycles
+        } else {
+
+          //this seams to be here so theres still enough hack cycles after we balance the ratios later to still fully hack the server
+          if (hackCycles * 100 < growCycles) {
+            hackCycles *= 10
+          }
+
+          //balancing for new max of grow and weaken cycles based off current hack cycles
+          // prior to this growCycles += Math.floor(server.ram / 1.75) inited at 0
+          //this is removing grow cycles to just make room for hacks
+          growCycles = Math.max(0, growCycles - Math.ceil((hackCycles * 1.7) / 1.75))
+          //inited to weakenCycles = growCycles; growCycles += Math.floor(server.ram / 1.75) inited at 0
+          weakenCycles = weakenCyclesForGrow(growCycles) + weakenCyclesForHack(hackCycles)
+
+          //making room in ram for weaken cycles
+          growCycles -= weakenCycles
+
+          //trying to remove hack cycles to make room for weaken but we already removed grow cycles for amount of ram taken by hacks
+          //so this would only be neccisary if there is not enough room for both hack and weaken. in witch case grow would == 0
+          //could def improve this part
+          hackCycles -= Math.ceil((weakenCyclesForHack(hackCycles) * 1.75) / 1.7)
+
+          growCycles = Math.max(0, growCycles)
         }
-
-        growCycles = Math.max(0, growCycles - Math.ceil((hackCycles * 1.7) / 1.75))
-
-        weakenCycles = weakenCyclesForGrow(growCycles) + weakenCyclesForHack(hackCycles)
-        growCycles -= weakenCycles
-        hackCycles -= Math.ceil((weakenCyclesForHack(hackCycles) * 1.75) / 1.7)
-
-        growCycles = Math.max(0, growCycles)
       } else {
+        //only if there is not enough ram for a full server hack
         growCycles = 0
         weakenCycles = weakenCyclesForHack(hackCycles)
         hackCycles -= Math.ceil((weakenCycles * 1.75) / 1.7)
@@ -270,15 +303,18 @@ export async function main(ns) {
           cyclesFittable -= growCyclesToRun
         }
 
-        if (cyclesFittable) {
+        if (cyclesFittable && weakenCycles) {
+          const weakenCyclesToRun = Math.min(weakenCycles, cyclesFittable)
           await ns.exec('weaken.js', server.host, cyclesFittable, bestTarget, cyclesFittable, 0, createUUID())
-          weakenCycles -= cyclesFittable
+          weakenCycles -= weakenCyclesToRun
+          cyclesFittable -= weakenCycles
         }
+
       }
     }
 
-    //await ns.kill('monitor.js', 'home', bestTarget)
-    //await ns.exec('monitor.js', 'home', 1, bestTarget)
+    await ns.kill('monitor.js', 'home', bestTarget)
+    await ns.exec('monitor.js', 'home', 1, bestTarget)
     await ns.asleep(weakenTime + 300)
   }
 }
