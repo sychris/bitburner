@@ -8,7 +8,7 @@ export async function main(ns) {
   }
 
   ns.print(`Starting operation: hack on ${target} in ${threads} threads`)
-  await ns.hack(target, { threads, stock: true })
+  ns.toast("earned: " + await ns.hack(target, { threads, stock: true }))
   ns.exit()
 }
 
