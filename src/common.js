@@ -9,6 +9,7 @@ export function settings() {
     minSecurityWeight: 100,
     mapRefreshInterval: 24 * 60 * 60 * 1000,  // 1 day in ms
     maxWeakenTime: 30 * 60 * 1000,  // 30 min
+    maxServerValueToHack: 50, //in percent max amount of money to steal from server default was 100%
     keys: {
       serverMap: 'BB_SERVER_MAP',
     },
