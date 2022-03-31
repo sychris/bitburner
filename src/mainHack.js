@@ -126,6 +126,7 @@ export async function main(ns) {
   while (true) {
     const serverExtraData = {}
     const serverMap = getItem(settings().keys.serverMap)
+    const delayBetweenAttacks = 30
     if (serverMap.servers.home.ram >= settings().homeRamBigMode) {
       settings().homeRamReserved = settings().homeRamReservedBase + settings().homeRamExtraRamReserved
     }
@@ -142,12 +143,13 @@ export async function main(ns) {
 
     const targetServers = findTargetServer(ns, hackableServers, serverMap.servers, serverExtraData)
     const bestTarget = targetServers.shift()
+
     const hackTime = calculateHackTime(ns,bestTarget)
     const growTime = calculateGrowTime(ns,bestTarget)
     const weakenTime = calculateWeakenTime(ns,bestTarget)
 
-    const growDelay = Math.max(0, weakenTime - growTime - 20)
-    const hackDelay = Math.max(0, growTime + growDelay - hackTime - 20)
+    const growDelay = Math.max(0, weakenTime - growTime - delayBetweenAttacks)
+    const hackDelay = Math.max(0, growTime + growDelay - hackTime - delayBetweenAttacks)
 
     const securityLevel = ns.getServerSecurityLevel(bestTarget)
     const money = ns.getServerMoneyAvailable(bestTarget)
@@ -164,9 +166,8 @@ export async function main(ns) {
     let hackCycles = 0
     let growCycles = 0
     let weakenCycles = 0
-    let multiRun = false
     let batchCount = 0
-    let batchInterval = 100
+    let batchInterval = delayBetweenAttacks * 4
 
     //appears to be setting hack and grow cycles to max allowable by ram availible
     for (let i = 0; i < hackableServers.length; i++) {
@@ -178,16 +179,11 @@ export async function main(ns) {
     weakenCycles = growCycles
 
     //outputing status
-    ns.tprint(
-      `[${localeHHMMSS()}] Selected ${bestTarget} for a target. Planning to ${action} the server. `)
-    ns.tprint(
-      `[${localeHHMMSS()}] Stock values: baseSecurity: ${serverMap.servers[bestTarget].baseSecurityLevel}; minSecurity: ${serverMap.servers[bestTarget].minSecurityLevel
-      }; maxMoney: $${numberWithCommas(parseInt(serverMap.servers[bestTarget].maxMoney, 10))}`
-    )
+    ns.tprint(`[${localeHHMMSS()}] Selected ${bestTarget} for a target. Planning to ${action} the server. `)
+    ns.tprint(`[${localeHHMMSS()}] Stock values: baseSecurity: ${serverMap.servers[bestTarget].baseSecurityLevel
+      }; minSecurity: ${serverMap.servers[bestTarget].minSecurityLevel}; maxMoney: $${numberWithCommas(parseInt(serverMap.servers[bestTarget].maxMoney, 10))}`)
     ns.tprint(`[${localeHHMMSS()}] Current values: security: ${Math.floor(securityLevel * 1000) / 1000}; money: $${numberWithCommas(parseInt(money, 10))}`)
-    ns.tprint(
-      `[${localeHHMMSS()}] Time to: hack: ${convertMSToHHMMSS(hackTime)}; grow: ${convertMSToHHMMSS(growTime)}; weaken: ${convertMSToHHMMSS(weakenTime)}`
-    )
+    ns.tprint(`[${localeHHMMSS()}] Time to: hack: ${convertMSToHHMMSS(hackTime)}; grow: ${convertMSToHHMMSS(growTime)}; weaken: ${convertMSToHHMMSS(weakenTime)}`)
     ns.tprint(`[${localeHHMMSS()}] Delays: ${convertMSToHHMMSS(hackDelay)} for hacks, ${convertMSToHHMMSS(growDelay)} for grows`)
 
 
@@ -205,10 +201,7 @@ export async function main(ns) {
         growCycles = 0
       }
 
-      ns.tprint(
-        `[${localeHHMMSS()}] Cycles ratio: ${growCycles} grow cycles; ${weakenCycles} weaken cycles; expected security reduction: ${Math.floor(settings().changes.weaken * weakenCycles * 1000) / 1000
-        }`
-      )
+      ns.tprint(`[${localeHHMMSS()}] Cycles ratio: ${growCycles} grow cycles; ${weakenCycles} weaken cycles; expected security reduction: ${Math.floor(settings().changes.weaken * weakenCycles * 1000) / 1000}`)
 
       for (let i = 0; i < hackableServers.length; i++) {
         const server = serverMap.servers[hackableServers[i]]
@@ -249,8 +242,7 @@ export async function main(ns) {
         }
       }
     } else { //action === 'hack'
-      //should be set in findTargetServer defigned as const serverExtraData = {}
-      ns.tprint("debug hackCycles: " + hackCycles +"serverExtraData[bestTarget].fullHackCycles: "+serverExtraData[bestTarget].fullHackCycles)
+      //should be set in findTargetServer defined as const serverExtraData = {}
       if (hackCycles > serverExtraData[bestTarget].fullHackCycles) {
         hackCycles = serverExtraData[bestTarget].fullHackCycles
         let memMaxGrowWeaken = growCycles //max avaible grow and weaken cycles in ram
@@ -264,7 +256,6 @@ export async function main(ns) {
         if (memMaxGrowWeaken > growWeakenCyclesForMaxHack) {
           growCycles = MaxGrowthCyclesNeededForHack
           weakenCycles = maxWeakenCycles
-          multiRun = true
         } else {
 
           //this seams to be here so theres still enough hack cycles after we balance the ratios later to still fully hack the server
@@ -314,15 +305,17 @@ export async function main(ns) {
         const server = serverMap.servers[hackableServers[i]]
         if (Date.now() > batchStart + growTime + growDelay - batchInterval) { break; } //our batching is taking way to long for the best server
         if (Date.now() + hackDelay < batchStart + batchCount * batchInterval) { break; } //we are going to start overlapping hacks no good
-        await ns.asleep(10)
+
+        await ns.asleep(10) //if we dont sleep for a moment out between servers the script will think we are locked up
+
         if (server.ram > batch.totalMemRequired) {
-
-          let serverBatchCount = Math.max(0,Math.floor(server.ram / batch.totalMemRequired))
-          while (serverBatchCount > 0) {
+          while (Math.max(0,Math.floor(server.ram / batch.totalMemRequired)) > 0) {
             batchCount += 1
-            await runFullBatch(ns, batch, batchCount, batchInterval, server, hackDelay, growDelay, bestTarget)
-            serverBatchCount--
-
+            let batchDelay = batchCount * batchInterval //so each batch hits batchInterval after each other
+            //dont bother with all the memory stuff we know it will all fit
+            await ns.exec('hack.js', server.host, batch.hackCycles, bestTarget, batch.hackCycles, hackDelay + batchDelay, createUUID())
+            await ns.exec('grow.js', server.host, batch.growCycles, bestTarget, batch.growCycles, growDelay + batchDelay, createUUID())
+            await ns.exec('weaken.js', server.host, batch.weakenCycles, bestTarget, batch.weakenCycles, batchDelay, createUUID())
           }
         }
 
@@ -360,11 +353,4 @@ export async function main(ns) {
     await ns.exec('monitor.js', 'home', 1, bestTarget)
     await ns.asleep(weakenTime + (batchCount * batchInterval) + 300)
   }
-}
-async function runFullBatch(ns, batch, batchCount, batchInterval, server, hackDelay, growDelay, bestTarget) {
-  let batchDelay = batchCount * batchInterval //so each batch hits batchInterval after each other
-  //dont bother with all the memory stuff we know it will all fit
-  await ns.exec('hack.js', server.host, batch.hackCycles, bestTarget, batch.hackCycles, hackDelay + batchDelay, createUUID())
-  await ns.exec('grow.js', server.host, batch.growCycles, bestTarget, batch.growCycles, growDelay + batchDelay, createUUID())
-  await ns.exec('weaken.js', server.host, batch.weakenCycles, bestTarget, batch.weakenCycles, batchDelay, createUUID())
 }
