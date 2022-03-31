@@ -105,7 +105,7 @@ function calculateHackTime(ns,server){
 }
 function calculateGrowTime(ns,server){
   if (ns.fileExists("formulas.exe", "home")) {
-    return  ns.formulas.hacking.hackTime(ns.getServer(server), ns.getPlayer())
+    return  ns.formulas.hacking.growTime(ns.getServer(server), ns.getPlayer())
   }else return ns.getGrowTime(server)
 }
 function calculateWeakenTime(ns,server){
