@@ -1,4 +1,4 @@
-/** @type import(".").NS */let ns = null;
+/** @param {NS} ns **/
 import {
   settings,
   getItem,
@@ -98,6 +98,21 @@ function findTargetServer(ns, serversList, servers, serverExtraData) {
 
   return weightedServers.map((server) => server.hostname)
 }
+function calculateHackTime(ns,server){
+  if (ns.fileExists("formulas.exe", "home")) {
+    return  ns.formulas.hacking.hackTime(ns.getServer(server), ns.getPlayer())
+  }else return ns.getHackTime(server)
+}
+function calculateGrowTime(ns,server){
+  if (ns.fileExists("formulas.exe", "home")) {
+    return  ns.formulas.hacking.hackTime(ns.getServer(server), ns.getPlayer())
+  }else return ns.getGrowTime(server)
+}
+function calculateWeakenTime(ns,server){
+  if (ns.fileExists("formulas.exe", "home")) {
+    return  ns.formulas.hacking.weakenTime(ns.getServer(server), ns.getPlayer())
+  }else return ns.getWeakenTime(server)
+}
 
 export async function main(ns) {
   ns.tprint(`[${localeHHMMSS()}] Starting mainHack.js`)
@@ -127,9 +142,9 @@ export async function main(ns) {
 
     const targetServers = findTargetServer(ns, hackableServers, serverMap.servers, serverExtraData)
     const bestTarget = targetServers.shift()
-    const hackTime = ns.getHackTime(bestTarget)
-    const growTime = ns.getGrowTime(bestTarget)
-    const weakenTime = ns.getWeakenTime(bestTarget)
+    const hackTime = calculateHackTime(ns,bestTarget)
+    const growTime = calculateGrowTime(ns,bestTarget)
+    const weakenTime = calculateWeakenTime(ns,bestTarget)
 
     const growDelay = Math.max(0, weakenTime - growTime - 20)
     const hackDelay = Math.max(0, growTime + growDelay - hackTime - 20)
@@ -353,5 +368,3 @@ async function runFullBatch(ns, batch, batchCount, batchInterval, server, hackDe
   await ns.exec('grow.js', server.host, batch.growCycles, bestTarget, batch.growCycles, growDelay + batchDelay, createUUID())
   await ns.exec('weaken.js', server.host, batch.weakenCycles, bestTarget, batch.weakenCycles, batchDelay, createUUID())
 }
-
-
