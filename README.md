@@ -5,10 +5,9 @@ Welcome to my log of [Bitburner](https://danielyxie.github.io/bitburner/) script
 If you want to play the game itself - click on the name above.
 
 ## Requirements
+I no longer know if this script functions for very new accounts earlyer forks likly will however.
 
-The script has been modified to be able to start on 8 GB (the default starting RAM for a player) on the `home` server. Obviously, when you expand the memory available, you'll get extra perks - being able to buy and manage player-owned servers, as well as using spare RAM to do actions.
-
-The script can be slow to get going, but it'll get there eventually. Getting access to more port hackers will improve the performance.
+The script can now run batches for far far faster monies but its still not stabalised.
 
 ## Instalation
 
