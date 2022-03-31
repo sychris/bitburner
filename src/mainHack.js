@@ -164,10 +164,7 @@ export async function main(ns) {
 
     //outputing status
     ns.tprint(
-      `[${localeHHMMSS()}] Selected ${bestTarget} for a target. Planning to ${action} the server. Will wake up around ${localeHHMMSS(
-        new Date().getTime() + weakenTime + 300
-      )}`
-    )
+      `[${localeHHMMSS()}] Selected ${bestTarget} for a target. Planning to ${action} the server. `)
     ns.tprint(
       `[${localeHHMMSS()}] Stock values: baseSecurity: ${serverMap.servers[bestTarget].baseSecurityLevel}; minSecurity: ${serverMap.servers[bestTarget].minSecurityLevel
       }; maxMoney: $${numberWithCommas(parseInt(serverMap.servers[bestTarget].maxMoney, 10))}`
@@ -339,7 +336,7 @@ export async function main(ns) {
           weakenCycles -= weakenCyclesToRun
           cyclesFittable -= weakenCycles
         }
-        ns.tprint(`[${localeHHMMSS()}] server memory to batch ${batch.totalMemRequired} batch's run: ${batchCount} `)
+        ns.tprint(`[${localeHHMMSS()}] server memory to batch ${batch.totalMemRequired} batch's run: ${batchCount} Will wake up around ${localeHHMMSS(new Date().getTime() + weakenTime + 300)} `)
 
       }
     }
