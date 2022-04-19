@@ -10,7 +10,7 @@ export async function main(ns) {
     // Buy first HacknetNode if there are none
     if (ns.hacknet.numNodes() === 0 && getServerMoneyAvailable("home") >= reserveMoney) {
       ns.hacknet.purchaseNode();
-      print("Purchased " + ns.hacknet.getNodeStats((ns.hacknet.numNodes() - 1)).name + " because there was none.");
+      ns.print("Purchased " + ns.hacknet.getNodeStats((ns.hacknet.numNodes() - 1)).name + " because there was none.");
     }
 
     // If there are no Hacknet Nodes, we can't do anything, so the script
@@ -23,7 +23,7 @@ export async function main(ns) {
             ns.print("Upgraded " + ns.hacknet.getNodeStats(i).name + " to level " + ns.hacknet.getNodeStats(i).level);
           }
           if (ns.hacknet.getRamUpgradeCost(i, n) < Infinity && ns.hacknet.upgradeRam(i, n)) {
-            print("Upgraded " +ns.hacknet.getNodeStats(i).name +" RAM to " +ns.hacknet.getNodeStats(i).ram);
+            ns.print("Upgraded " +ns.hacknet.getNodeStats(i).name +" RAM to " +ns.hacknet.getNodeStats(i).ram);
           }
           if (ns.hacknet.getCoreUpgradeCost(i, n) < Infinity && ns.hacknet.upgradeCore(i, n)) {
             ns.print("Upgraded " +ns.hacknet.getNodeStats(i).name + " core to " + ns.hacknet.getNodeStats(i).core);
@@ -42,7 +42,7 @@ export async function main(ns) {
             (ns.hacknet.numNodes() - 1), n) === Infinity
         ) {
           ns.hacknet.purchaseNode();
-          print(
+          ns.print(
             "Purchased " +
             ns.hacknet.getNodeStats((ns.hacknet.numNodes() - 1)).name +
             " because the last one couldn't be upgraded further."
