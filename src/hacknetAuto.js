@@ -26,7 +26,7 @@ export async function main(ns) {
             ns.print("Upgraded " +ns.hacknet.getNodeStats(i).name +" RAM to " +ns.hacknet.getNodeStats(i).ram);
           }
           if (ns.hacknet.getCoreUpgradeCost(i, n) < Infinity && ns.hacknet.upgradeCore(i, n)) {
-            ns.print("Upgraded " +ns.hacknet.getNodeStats(i).name + " core to " + ns.hacknet.getNodeStats(i).core);
+            ns.print("Upgraded " +ns.hacknet.getNodeStats(i).name + " core to " + ns.hacknet.getNodeStats(i).cores);
           }
         } // END for (i = 0; i < ns.hacknet.numNodes(); i++)
         // Buy next Hacknet Node if the last one is already fully
