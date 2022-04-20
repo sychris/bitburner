@@ -44,9 +44,7 @@ export async function main(ns) {
           ns.hacknet.purchaseNode();
           ns.print(
             "Purchased " +
-            ns.hacknet.getNodeStats((ns.hacknet.numNodes() - 1)).name +
-            " because the last one couldn't be upgraded further."
-          );
+            ns.hacknet.getNodeStats((ns.hacknet.numNodes() - 1)).name + " because the last one couldn't be upgraded further.");
         } else if (
           // Or buy the next Hacknet Node if the next upgrade is more
           // expensive than buying a new Hacknet Node.
