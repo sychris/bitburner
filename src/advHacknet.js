@@ -11,19 +11,27 @@ var formatter = new Intl.NumberFormat('en-US', {
 
 
 export async function main(ns) {
-    ns.clearLog()
-    ns.print("this script is not yet finished and will not work")
-    if (ns.hacknet.maxNumNodes == 0) exitScript(ns,1)
-    let upgrade = bestServerAndUpgrade(ns)
-    ns.print("Server ID: "+upgrade.id)
-    ns.print("Upgrade type: "+upgrade.upgrade.type)
-    ns.print("Upgrade cost: "+formatter.format(upgrade.upgrade.price))
-    ns.print("Upgrade cost per 1 hash/sec: "+formatter.format(upgrade.upgrade.costPerHash))
-
+    while (true) {
+        ns.clearLog()
+        ns.print("this script is not yet fully tested")
+        if (ns.hacknet.maxNumNodes == 0) exitScript(ns, 1)
+        let upgrade = bestServerAndUpgrade(ns)
+        ns.print("Server ID: " + upgrade.id)
+        ns.print("Upgrade type: " + upgrade.upgrade.type)
+        ns.print("Upgrade cost: " + formatter.format(upgrade.upgrade.price))
+        ns.print("Upgrade cost per 1 hash/sec: " + formatter.format(upgrade.upgrade.costPerHash))
+        await buyUpgrade(ns, upgrade)
+        await ns.sleep(1000)
+    }
 }
 function buyUpgrade(ns, upgrade) {
-    if (upgrade.id == -1) exitScript(ns,2)
+    if (upgrade.id == -1) exitScript(ns, 2)
+    else if (upgrade.id == "buy_new_server") ns.hacknet.pruchaseNode()
+    else if (upgrade.upgrade.type == "core")ns.hacknet.upgradeCore(upgrade.id, 1)
+    else if (upgrade.upgrade.type == "level") ns.hacknet.upgradeLevel(upgrade.id, 1)
+    else if (upgrade.upgrade.type == "ram") ns.hacknet.upgradeRam(upgrade.id, 1);
 }
+
 function exitScript(ns, exitCode) {
     if (exitCode == 1) ns.print("there are no hacknet nodes allowed on this run!");
     if (exitCode == 2) ns.tprint("no more upgrades availible exiting advHacknet.js");
