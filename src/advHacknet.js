@@ -11,9 +11,12 @@ var formatter = new Intl.NumberFormat('en-US', {
 
 
 export async function main(ns) {
+    ns.disableLog("sleep")
     while (true) {
         ns.clearLog()
         ns.print("this script is not yet fully tested")
+        ns.print("you own: " + ns.hacknet.numNodes() + " of " + ns.hacknet.maxNumNodes() + " possible nodes.")
+        ns.print("currently stored hashes: " + ns.hacknet.numHashes() + " capacity: " + ns.hacknet.hashCapacity())
         if (ns.hacknet.maxNumNodes == 0) exitScript(ns, 1)
         let upgrade = bestServerAndUpgrade(ns)
         ns.print("Server ID: " + upgrade.id)
@@ -60,7 +63,7 @@ function bestServerAndUpgrade(ns) {
             bestServer.upgrade.price = getNewServCost(ns)
             bestServer.upgrade.costPerHash = getNewServCost(ns) / newServerHashRate(ns)
         }
-        for (let i = 0; i < ns.hacknet.numNodes() - 1; i++){
+        for (let i = 0; i < ns.hacknet.numNodes(); i++){
             let tempServer = {}
             tempServer.id = i;
             tempServer.upgrade = getBestUpgrade(ns, ns.hacknet.getNodeStats(i))
@@ -83,7 +86,7 @@ function getBestUpgrade(ns, hacknetNodeStats) {
     bestUpgrade.costPerHash = Infinity
 
     let corePricePerHash = CoreUpgradePricePerHash(ns, hacknetNodeStats)
-    //ns.print("CorePricePerHash: " + formatter.format(bestUpgrade.costPerHash))
+    //ns.print("CorePricePerHash: " + formatter.format(corePricePerHash))
     if (corePricePerHash < bestUpgrade.costPerHash) {
         bestUpgrade.type = "core"
         bestUpgrade.price = coreUpgradePrice(ns, hacknetNodeStats)
@@ -127,7 +130,7 @@ function CoreUpgradePricePerHash(ns, hacknetNodeStats) {
 }
 
 function levelUpgradePrice(ns, hacknetNodeStats) {
-    ns.formulas.hacknetServers.levelUpgradeCost(hacknetNodeStats.level, 1, ns.getPlayer().hacknet_node_level_cost_mult)
+    return ns.formulas.hacknetServers.levelUpgradeCost(hacknetNodeStats.level, 1, ns.getPlayer().hacknet_node_level_cost_mult)
 }
 function LevelUpgradePricePerHash(ns, hacknetNodeStats) {
     let current = CurrentHashRate(ns, hacknetNodeStats)
@@ -144,7 +147,7 @@ function LevelUpgradePricePerHash(ns, hacknetNodeStats) {
 }
 
 function ramUpgradePrice(ns, hacknetNodeStats) {
-    ns.formulas.hacknetServers.ramUpgradeCost(hacknetNodeStats.ram, 1, ns.getPlayer().hacknet_node_ram_cost_mult)
+    return ns.formulas.hacknetServers.ramUpgradeCost(hacknetNodeStats.ram, 1, ns.getPlayer().hacknet_node_ram_cost_mult)
 }
 function RamUpgradePricePerHash(ns, hacknetNodeStats) {
     let current = CurrentHashRate(ns, hacknetNodeStats)
