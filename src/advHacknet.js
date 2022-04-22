@@ -29,7 +29,7 @@ export async function main(ns) {
 }
 function buyUpgrade(ns, upgrade) {
     if (upgrade.id == -1) exitScript(ns, 2)
-    else if (upgrade.id == "buy_new_server") ns.hacknet.pruchaseNode()
+    else if (upgrade.upgrade.type == "buy_new_server") ns.hacknet.purchaseNode()
     else if (upgrade.upgrade.type == "core")ns.hacknet.upgradeCore(upgrade.id, 1)
     else if (upgrade.upgrade.type == "level") ns.hacknet.upgradeLevel(upgrade.id, 1)
     else if (upgrade.upgrade.type == "ram") ns.hacknet.upgradeRam(upgrade.id, 1);
@@ -48,29 +48,21 @@ function bestServerAndUpgrade(ns) {
     bestServer.upgrade.type = ""
     bestServer.upgrade.price = Infinity
     bestServer.upgrade.costPerHash = Infinity
-    let serverCount = ns.hacknet.numNodes()
 
-
-    if (serverCount == 0 ) {
-        bestServer.id = "buy_new_server"
+    if (ns.hacknet.numNodes() == 0 )ns.hacknet.purchaseNode()
+    if (ns.hacknet.numNodes() <  ns.hacknet.maxNumNodes()) {
+        bestServer.id = -2
         bestServer.upgrade.type = "buy_new_server"
         bestServer.upgrade.price = getNewServCost(ns)
         bestServer.upgrade.costPerHash = getNewServCost(ns) / newServerHashRate(ns)
-    } else {
-        if (serverCount <  ns.hacknet.maxNumNodes) {
-            bestServer.id = "buy_new_server"
-            bestServer.upgrade.type = "buy_new_server"
-            bestServer.upgrade.price = getNewServCost(ns)
-            bestServer.upgrade.costPerHash = getNewServCost(ns) / newServerHashRate(ns)
-        }
-        for (let i = 0; i < ns.hacknet.numNodes(); i++){
-            let tempServer = {}
-            tempServer.id = i;
-            tempServer.upgrade = getBestUpgrade(ns, ns.hacknet.getNodeStats(i))
-            if (tempServer.upgrade.costPerHash < bestServer.upgrade.costPerHash) bestServer = tempServer;
-        }
-        return bestServer
     }
+    for (let i = 0; i < ns.hacknet.numNodes(); i++){
+        let tempServer = {}
+        tempServer.id = i;
+        tempServer.upgrade = getBestUpgrade(ns, ns.hacknet.getNodeStats(i))
+        if (tempServer.upgrade.costPerHash < bestServer.upgrade.costPerHash) bestServer = tempServer;
+    }
+    return bestServer
 }
 
 function getNewServCost(ns) {
