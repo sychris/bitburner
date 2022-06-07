@@ -266,7 +266,7 @@ export async function main(ns) {
       }
     } else { //action === 'hack'
       //should be set in findTargetServer defigned as const serverExtraData = {}
-      ns.tprint("debug hackCycles: " + hackCycles +"serverExtraData[bestTarget].fullHackCycles: "+serverExtraData[bestTarget].fullHackCycles)
+      //ns.tprint("debug hackCycles: " + hackCycles +"serverExtraData[bestTarget].fullHackCycles: "+serverExtraData[bestTarget].fullHackCycles)
       if (hackCycles > serverExtraData[bestTarget].fullHackCycles) {
         hackCycles = serverExtraData[bestTarget].fullHackCycles
         let memMaxGrowWeaken = growCycles //max avaible grow and weaken cycles in ram
@@ -274,7 +274,8 @@ export async function main(ns) {
         //hackAnalyze(host: string): number;Returns the part of the specified server’s money you will steal with a single thread hack
         let percentHacked = ns.hackAnalyze(bestTarget) * hackCycles *100
         //growthAnalyze(host: string, growthAmount: number, cores?: number): number; The amount of grow calls needed to grow the specified server by the specified amount
-        let MaxGrowthCyclesNeededForHack = Math.ceil(ns.growthAnalyze(bestTarget,Math.ceil(100/(100-percentHacked))))
+        let MaxGrowthCyclesNeededForHack = Math.ceil(ns.growthAnalyze(bestTarget, Math.ceil(100 / (100 - percentHacked))))
+        ns.tprint("percent hacked = " + percentHacked)
         ns.tprint("percent hacked = " + Math.ceil(100/percentHacked))
         let maxWeakenCycles = Math.ceil(weakenCyclesForGrow(MaxGrowthCyclesNeededForHack) + weakenCyclesForHack(hackCycles))
         let growWeakenCyclesForMaxHack = MaxGrowthCyclesNeededForHack + maxWeakenCycles
