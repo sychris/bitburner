@@ -8,6 +8,14 @@ import {
   createUUID
 } from 'common.js'
 
+//let script detect best set to "auto"
+//let serverToAtack = "auto"
+//let serverToAtack = "foodnstuff"
+//let serverToAtack = "phantasy"
+let serverToAtack = "the-hub"
+//let serverToAtack = "blade"
+
+
 const hackPrograms = ['BruteSSH.exe', 'FTPCrack.exe', 'relaySMTP.exe',
   'HTTPWorm.exe', 'SQLInject.exe']
 const hackScripts = ['hack.js', 'grow.js', 'weaken.js']
@@ -141,11 +149,13 @@ export async function main(ns) {
     const hackableServers = await getHackableServers(ns, serverMap.servers)
 
     const targetServers = findTargetServer(ns, hackableServers, serverMap.servers, serverExtraData)
-    //const bestTarget = targetServers.shift()
-    //const bestTarget = "foodnstuff"
-    //const bestTarget = "phantasy"
-    const bestTarget = "the-hub"
-    //const bestTarget = "blade"
+    let bestTarget = ""
+    if (serverToAtack == "auto") {
+      bestTarget = targetServers.shift()
+    }
+    else {
+      bestTarget = serverToAtack
+    }
 
     const hackTime = calculateHackTime(ns,bestTarget)
     const growTime = calculateGrowTime(ns,bestTarget)
@@ -303,7 +313,7 @@ export async function main(ns) {
         hackCycles -= Math.ceil((weakenCycles * 1.75) / 1.7)
       }
 
-
+      var batchesRunning = false //this is used to see if we should skip partials
       var batch = new Object();
       batch.hackCycles = hackCycles
       batch.growCycles = growCycles
@@ -315,48 +325,54 @@ export async function main(ns) {
 
       ns.tprint(`[${localeHHMMSS()}]  Cycles ratio: ${hackCycles} hack cycles; ${growCycles} grow cycles; ${weakenCycles} weaken cycles`)
 
-
+      for (let i = 0; i < hackableServers.length; i++) {
+        const server = serverMap.servers[hackableServers[i]]
+        if (server.ram > batch.totalMemRequired) batchesRunning = true
+      }
 
       for (let i = 0; i < hackableServers.length; i++) {
         const server = serverMap.servers[hackableServers[i]]
         if (Date.now() > batchStart + growTime + growDelay - batchInterval) { break; } //our batching is taking way to long for the best server
         if (Date.now() + hackDelay < batchStart + batchCount * batchInterval) { break; } //we are going to start overlapping hacks no good
         await ns.asleep(10)
-        if (server.ram > batch.totalMemRequired) {
+        if (batchesRunning) {
+          if (server.ram > batch.totalMemRequired) {
 
-          let serverBatchCount = Math.max(0,Math.floor(server.ram / batch.totalMemRequired))
-          while (serverBatchCount > 0) {
-            batchCount += 1
-            await runFullBatch(ns, batch, batchCount, batchInterval, server, hackDelay, growDelay, bestTarget)
-            serverBatchCount--
+            let serverBatchCount = Math.max(0, Math.floor(server.ram / batch.totalMemRequired))
+            while (serverBatchCount > 0) {
+              batchCount += 1
+              await runFullBatch(ns, batch, batchCount, batchInterval, server, hackDelay, growDelay, bestTarget)
+              serverBatchCount--
 
+            }
           }
-        }
+        } else { //we are not able to fit a batch in a server so just a partial will have to do
 
-        let cyclesFittable = Math.max(0, Math.floor(server.ram / 1.7))
-        const cyclesToRun = Math.max(0, Math.min(cyclesFittable, hackCycles))
-        if (hackCycles) {
-          await ns.exec('hack.js', server.host, cyclesToRun, bestTarget, cyclesToRun, hackDelay, createUUID())
-          hackCycles -= cyclesToRun
-          cyclesFittable -= cyclesToRun
-        }
+          let cyclesFittable = Math.max(0, Math.floor(server.ram / 1.7))
+          const cyclesToRun = Math.max(0, Math.min(cyclesFittable, hackCycles))
+          if (hackCycles) {
+            await ns.exec('hack.js', server.host, cyclesToRun, bestTarget, cyclesToRun, hackDelay, createUUID())
+            hackCycles -= cyclesToRun
+            cyclesFittable -= cyclesToRun
+          }
 
-        const freeRam = server.ram - cyclesToRun * 1.7
-        cyclesFittable = Math.max(0, Math.floor(freeRam / 1.75))
+          const freeRam = server.ram - cyclesToRun * 1.7
+          cyclesFittable = Math.max(0, Math.floor(freeRam / 1.75))
 
-        if (cyclesFittable && growCycles) {
-          const growCyclesToRun = Math.min(growCycles, cyclesFittable)
+          if (cyclesFittable && growCycles) {
+            const growCyclesToRun = Math.min(growCycles, cyclesFittable)
 
-          await ns.exec('grow.js', server.host, growCyclesToRun, bestTarget, growCyclesToRun, growDelay, createUUID())
-          growCycles -= growCyclesToRun
-          cyclesFittable -= growCyclesToRun
-        }
+            await ns.exec('grow.js', server.host, growCyclesToRun, bestTarget, growCyclesToRun, growDelay, createUUID())
+            growCycles -= growCyclesToRun
+            cyclesFittable -= growCyclesToRun
+          }
 
-        if (cyclesFittable && weakenCycles) {
-          const weakenCyclesToRun = Math.min(weakenCycles, cyclesFittable)
-          await ns.exec('weaken.js', server.host, weakenCyclesToRun, bestTarget, weakenCyclesToRun, 0, createUUID())
-          weakenCycles -= weakenCyclesToRun
-          cyclesFittable -= weakenCycles
+          if (cyclesFittable && weakenCycles) {
+            const weakenCyclesToRun = Math.min(weakenCycles, cyclesFittable)
+            await ns.exec('weaken.js', server.host, weakenCyclesToRun, bestTarget, weakenCyclesToRun, 0, createUUID())
+            weakenCycles -= weakenCyclesToRun
+            cyclesFittable -= weakenCycles
+          }
         }
         ns.tprint(`[${localeHHMMSS()}] server memory to batch ${batch.totalMemRequired} batch's run: ${batchCount} Will wake up around ${localeHHMMSS(new Date().getTime() + weakenTime + 300)} `)
 
