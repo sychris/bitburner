@@ -374,9 +374,8 @@ export async function main(ns) {
             cyclesFittable -= weakenCycles
           }
         }
-        ns.tprint(`[${localeHHMMSS()}] server memory to batch ${batch.totalMemRequired} batch's run: ${batchCount} Will wake up around ${localeHHMMSS(new Date().getTime() + weakenTime + 300)} `)
-
       }
+      ns.tprint(`[${localeHHMMSS()}] server memory to batch ${batch.totalMemRequired} batch's run: ${batchCount} Will wake up around ${localeHHMMSS(new Date().getTime() + weakenTime + 300)} `)
     }
 
     await ns.kill('monitor.js', 'home', bestTarget)
