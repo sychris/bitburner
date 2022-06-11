@@ -7,6 +7,8 @@ const settings = {
 }
 
 export async function main(ns) {
+  ns.tail();
+  ns.disableLog('SLEEP');
   ns.tprint(`[${localeHHMMSS()}] Starting karmaReducer.js`)
 
   let hostname = ns.getHostname()
