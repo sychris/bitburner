@@ -174,6 +174,14 @@ export async function main(ns) {
       bestTarget = serverToAtack
     }
 
+
+    let incompleateFlag = false
+    while (await checkPreviousRunDone(ns, serverMap, hackableServers) == false) {
+      if (!incompleateFlag) ns.tprint("detected incompleate previous run!!!!!")
+      incompleateFlag = true
+      await ns.sleep(1000)
+    }
+
     const hackTime = calculateHackTime(ns,bestTarget)
     const growTime = calculateGrowTime(ns,bestTarget)
     const weakenTime = calculateWeakenTime(ns,bestTarget)
@@ -184,13 +192,6 @@ export async function main(ns) {
 
     const securityLevel = ns.getServerSecurityLevel(bestTarget)
     const money = ns.getServerMoneyAvailable(bestTarget)
-
-    let incompleateFlag = false
-    while (await checkPreviousRunDone(ns, serverMap, hackableServers) == false) {
-      if (!incompleateFlag) ns.tprint("detected incompleate previous run!!!!!")
-      incompleateFlag = true
-      await ns.sleep(1000)
-    }
 
 
     let action = 'weaken'
