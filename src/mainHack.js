@@ -71,6 +71,14 @@ async function getHackableServers(ns, servers) {
   return hackableServers
 }
 
+function getCyclesToFullyHack(ns, hostname, servers) {
+  if (ns.fileExists("formulas.exe", "home")) {
+      return  Math.ceil((settings().maxServerValueToHack / 100) /  ns.formulas.hacking.hackPercent(ns.getServer(hostname),ns.getPlayer()))
+  } else {
+      return Math.ceil(ns.hackAnalyzeThreads(hostname, servers[hostname].maxMoney * (settings().maxServerValueToHack / 100)))
+  }
+}
+
 function findTargetServer(ns, serversList, servers, serverExtraData) {
   const playerDetails = getPlayerDetails(ns)
 
@@ -82,11 +90,7 @@ function findTargetServer(ns, serversList, servers, serverExtraData) {
 
   let weightedServers = serversList.map((hostname) => {
 
-    const fullHackCycles = Math.ceil(ns.hackAnalyzeThreads(hostname, servers[hostname].maxMoney * (settings().maxServerValueToHack / 100)))
-
-    //ns.tprint("serverList: " + serversList)
-   // ns.tprint("servers: " + servers)
-    //ns.tprint("setting fullHackCycle to:" + fullHackCycles + "for: " + hostname)
+    const fullHackCycles = getCyclesToFullyHack(ns, hostname, servers)
     serverExtraData[hostname] = {
       fullHackCycles,
     }
@@ -123,6 +127,16 @@ function calculateWeakenTime(ns,server){
   if (ns.fileExists("formulas.exe", "home")) {
     return  ns.formulas.hacking.weakenTime(ns.getServer(server), ns.getPlayer())
   }else return ns.getWeakenTime(server)
+}
+
+async function checkPreviousRunDone(ns,serverMap, hackableServers) {
+  for (let i = 0; i < hackableServers.length; i++) {
+      let server = serverMap.servers[hackableServers[i]]
+      if (await ns.scriptRunning("hack.js", server.host)) return false
+      if (await ns.scriptRunning("grow.js", server.host)) return false
+      if (await ns.scriptRunning("weaken.js",server.host)) return false
+  }
+  return true
 }
 
 export async function main(ns) {
@@ -163,13 +177,21 @@ export async function main(ns) {
     const hackTime = calculateHackTime(ns,bestTarget)
     const growTime = calculateGrowTime(ns,bestTarget)
     const weakenTime = calculateWeakenTime(ns,bestTarget)
-    const attackDelay = 40
+    const attackDelay = 60
 
     const growDelay = Math.max(0, weakenTime - growTime - attackDelay)
     const hackDelay = Math.max(0, growTime + growDelay - hackTime - attackDelay)
 
     const securityLevel = ns.getServerSecurityLevel(bestTarget)
     const money = ns.getServerMoneyAvailable(bestTarget)
+
+    let incompleateFlag = false
+    while (await checkPreviousRunDone(ns, serverMap, hackableServers) == false) {
+      if (!incompleateFlag) ns.tprint("detected incompleate previous run!!!!!")
+      incompleateFlag = true
+      await ns.sleep(1000)
+    }
+
 
     let action = 'weaken'
     if (securityLevel > serverMap.servers[bestTarget].minSecurityLevel + settings().minSecurityLevelOffset) {
@@ -185,7 +207,7 @@ export async function main(ns) {
     let weakenCycles = 0
     let multiRun = false
     let batchCount = 0
-    let batchInterval = attackDelay *4
+    let batchInterval = 300
 
     //appears to be setting hack and grow cycles to max allowable by ram availible
     for (let i = 0; i < hackableServers.length; i++) {
@@ -195,6 +217,8 @@ export async function main(ns) {
     }
     //setting weaken cylcles to max allowable values
     weakenCycles = growCycles
+
+
 
     //outputing status
     ns.tprint(`[${localeHHMMSS()}] Selected ${bestTarget} for a target. Planning to ${action} the server. `)
@@ -316,6 +340,7 @@ export async function main(ns) {
       batch.weakenCycles = weakenCycles
       batch.totalMemRequired = hackCycles * 1.7 + (growCycles + weakenCycles) * 1.75
       let batchStart = Date.now()
+      let batchOverlap = Date.now() + hackDelay - batchInterval //batch interval is here to insure we have time for a full batch
 
 
 
@@ -328,9 +353,12 @@ export async function main(ns) {
 
       for (let i = 0; i < hackableServers.length; i++) {
         const server = serverMap.servers[hackableServers[i]]
-        if (Date.now() > batchStart + growTime + growDelay - batchInterval) { break; } //our batching is taking way to long for the best server
-        if (Date.now() + hackDelay < batchStart + batchCount * batchInterval) { break; } //we are going to start overlapping hacks no good
-        await ns.asleep(10)
+
+        if (Date.now() + (batchCount * batchInterval) > batchOverlap) {
+          ns.tprint("breaking batching as we are overrunning max batch time")
+          break;
+        } //we are going to start overlapping hacks no good
+        await ns.sleep(10)
         if (batchesRunning) {
           if (server.ram > batch.totalMemRequired) {
 
@@ -374,9 +402,9 @@ export async function main(ns) {
       ns.tprint(`[${localeHHMMSS()}] server memory to batch ${batch.totalMemRequired} batch's run: ${batchCount} Will wake up around ${localeHHMMSS(new Date().getTime() + weakenTime + 300)} `)
     }
 
-    await ns.kill('monitor.js', 'home', bestTarget)
+    //await ns.kill('monitor.js', 'home', bestTarget)
     await ns.exec('monitor.js', 'home', 1, bestTarget)
-    await ns.asleep(weakenTime + (batchCount * batchInterval) + 300)
+    await ns.sleep(weakenTime + (batchCount * batchInterval) + 300)
   }
 }
 async function runFullBatch(ns, batch, batchCount, batchInterval, server, hackDelay, growDelay, bestTarget) {
