@@ -194,6 +194,13 @@ export async function main(ns) {
     const money = ns.getServerMoneyAvailable(bestTarget)
 
 
+    let hackCycles = 0
+    let growCycles = 0
+    let weakenCycles = 0
+    let multiRun = false
+    let batchCount = 0
+    let batchInterval = 300
+
     let action = 'weaken'
     if (securityLevel > serverMap.servers[bestTarget].minSecurityLevel + settings().minSecurityLevelOffset) {
       action = 'weaken'
@@ -203,12 +210,6 @@ export async function main(ns) {
       action = 'hack'
     }
 
-    let hackCycles = 0
-    let growCycles = 0
-    let weakenCycles = 0
-    let multiRun = false
-    let batchCount = 0
-    let batchInterval = 300
 
     //appears to be setting hack and grow cycles to max allowable by ram availible
     for (let i = 0; i < hackableServers.length; i++) {
