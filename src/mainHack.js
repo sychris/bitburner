@@ -199,7 +199,7 @@ export async function main(ns) {
     let weakenCycles = 0
     let multiRun = false
     let batchCount = 0
-    let batchInterval = 300
+    let batchInterval = 1000
 
     let action = 'weaken'
     if (securityLevel > serverMap.servers[bestTarget].minSecurityLevel + settings().minSecurityLevelOffset) {
