@@ -12,9 +12,9 @@ import {
 //let serverToAtack = "auto"
 //let serverToAtack = "foodnstuff"
 //let serverToAtack = "phantasy"
-let serverToAtack = "the-hub"
+//let serverToAtack = "the-hub"
 //let serverToAtack = "blade"
-
+let serverToAtack = "ecorp"
 
 const hackPrograms = ['BruteSSH.exe', 'FTPCrack.exe', 'relaySMTP.exe',
   'HTTPWorm.exe', 'SQLInject.exe']
@@ -50,8 +50,8 @@ async function getHackableServers(ns, servers) {
     .filter((hostname) => ns.serverExists(hostname))
     .filter((hostname) => servers[hostname].ports <= playerDetails.portHacks ||
       ns.hasRootAccess(hostname))
-    .filter((hostname) => servers[hostname].ram >= 2)
-    .filter((hostname) => !/hacknet/.test(hostname))
+    //.filter((hostname) => servers[hostname].ram >= 2)
+    //.filter((hostname) => !/hacknet/.test(hostname))
 
   for (const hostname of hackableServers) {
     if (hostname === 'home') continue;
@@ -84,6 +84,9 @@ function findTargetServer(ns, serversList, servers, serverExtraData) {
 
     const fullHackCycles = Math.ceil(ns.hackAnalyzeThreads(hostname, servers[hostname].maxMoney * (settings().maxServerValueToHack / 100)))
 
+    //ns.tprint("serverList: " + serversList)
+   // ns.tprint("servers: " + servers)
+    //ns.tprint("setting fullHackCycle to:" + fullHackCycles + "for: " + hostname)
     serverExtraData[hostname] = {
       fullHackCycles,
     }
@@ -223,13 +226,13 @@ export async function main(ns) {
         let cyclesFittable = Math.max(0, Math.floor(server.ram / 1.75))
         const cyclesToRun = Math.max(0, Math.min(cyclesFittable, growCycles))
 
-        if (growCycles) {
+        if (growCycles && cyclesFittable > 0) {
           await ns.exec('grow.js', server.host, cyclesToRun, bestTarget, cyclesToRun, growDelay, createUUID())
           growCycles -= cyclesToRun
           cyclesFittable -= cyclesToRun
         }
 
-        if (cyclesFittable) {
+        if (cyclesFittable && cyclesFittable > 0) {
           await ns.exec('weaken.js', server.host, cyclesFittable, bestTarget, cyclesFittable, 0, createUUID())
           weakenCycles -= cyclesFittable
         }
@@ -245,13 +248,13 @@ export async function main(ns) {
         let cyclesFittable = Math.max(0, Math.floor(server.ram / 1.75))
         const cyclesToRun = Math.max(0, Math.min(cyclesFittable, growCycles))
 
-        if (growCycles) {
+        if (growCycles && cyclesFittable > 0) {
           await ns.exec('grow.js', server.host, cyclesToRun, bestTarget, cyclesToRun, growDelay, createUUID())
           growCycles -= cyclesToRun
           cyclesFittable -= cyclesToRun
         }
 
-        if (cyclesFittable) {
+        if (cyclesFittable > 0) {
           await ns.exec('weaken.js', server.host, cyclesFittable, bestTarget, cyclesFittable, 0, createUUID())
           weakenCycles -= cyclesFittable
         }
@@ -344,7 +347,7 @@ export async function main(ns) {
           let cyclesFittable = Math.max(0, Math.floor(server.ram / 1.7))
           const cyclesToRun = Math.max(0, Math.min(cyclesFittable, hackCycles))
           if (hackCycles) {
-            await ns.exec('hack.js', server.host, cyclesToRun, bestTarget, cyclesToRun, hackDelay, createUUID())
+            if(cyclesToRun > 0)await ns.exec('hack.js', server.host, cyclesToRun, bestTarget, cyclesToRun, hackDelay, createUUID())
             hackCycles -= cyclesToRun
             cyclesFittable -= cyclesToRun
           }
@@ -355,14 +358,14 @@ export async function main(ns) {
           if (cyclesFittable && growCycles) {
             const growCyclesToRun = Math.min(growCycles, cyclesFittable)
 
-            await ns.exec('grow.js', server.host, growCyclesToRun, bestTarget, growCyclesToRun, growDelay, createUUID())
+            if(growCyclesToRun >0)await ns.exec('grow.js', server.host, growCyclesToRun, bestTarget, growCyclesToRun, growDelay, createUUID())
             growCycles -= growCyclesToRun
             cyclesFittable -= growCyclesToRun
           }
 
           if (cyclesFittable && weakenCycles) {
             const weakenCyclesToRun = Math.min(weakenCycles, cyclesFittable)
-            await ns.exec('weaken.js', server.host, weakenCyclesToRun, bestTarget, weakenCyclesToRun, 0, createUUID())
+            if(weakenCyclesToRun > 0)await ns.exec('weaken.js', server.host, weakenCyclesToRun, bestTarget, weakenCyclesToRun, 0, createUUID())
             weakenCycles -= weakenCyclesToRun
             cyclesFittable -= weakenCycles
           }
