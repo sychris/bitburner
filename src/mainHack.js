@@ -366,6 +366,10 @@ export async function main(ns) {
 
             let serverBatchCount = Math.max(0, Math.floor(server.ram / batch.totalMemRequired))
             while (serverBatchCount > 0) {
+              if (Date.now() + (batchCount * batchInterval) > batchOverlap) {
+                ns.tprint("breaking batching as we are overrunning max batch time")
+                break;
+              }
               batchCount += 1
               await runFullBatch(ns, batch, batchCount, batchInterval, server, hackDelay, growDelay, bestTarget)
               serverBatchCount--
