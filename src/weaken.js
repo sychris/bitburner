@@ -4,7 +4,7 @@ export async function main(ns) {
   const delay = ns.args[2]
 
   if (delay && delay > 0) {
-    await ns.asleep(delay)
+    await ns.sleep(delay)
   }
 
   ns.print(`Starting operation: weaken on ${target} in ${threads} threads`)
