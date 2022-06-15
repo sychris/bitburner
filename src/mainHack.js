@@ -341,7 +341,6 @@ export async function main(ns) {
       batch.growCycles = growCycles
       batch.weakenCycles = weakenCycles
       batch.totalMemRequired = hackCycles * 1.7 + (growCycles + weakenCycles) * 1.75
-      let batchStart = Date.now()
       let batchOverlap = Date.now() + hackDelay - batchInterval //batch interval is here to insure we have time for a full batch
 
 
