@@ -1,6 +1,6 @@
 export async function main(ns) {
     const flags = ns.flags([
-        ['refreshrate', 100],
+        ['refreshrate', 1000],
         ['help', false],
     ])
     if (flags._.length === 0 || flags.help) {
