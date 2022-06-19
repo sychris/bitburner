@@ -20,6 +20,7 @@ const hackPrograms = ['BruteSSH.exe', 'FTPCrack.exe', 'relaySMTP.exe',
   'HTTPWorm.exe', 'SQLInject.exe']
 const hackScripts = ['hack.js', 'grow.js', 'weaken.js']
 
+
 function convertMSToHHMMSS(ms = 0) {
   if (ms <= 0) {
     return '00:00:00'
@@ -109,7 +110,7 @@ function findTargetServer(ns, serversList, servers, serverExtraData) {
   })
 
   weightedServers.sort((a, b) => b.serverValue - a.serverValue)
-  ns.print(JSON.stringify(weightedServers, null, 2))
+  //ns.print(JSON.stringify(weightedServers, null, 2))
 
   return weightedServers.map((server) => server.hostname)
 }
@@ -140,7 +141,10 @@ async function checkPreviousRunDone(ns,serverMap, hackableServers) {
 }
 
 export async function main(ns) {
-  ns.tprint(`[${localeHHMMSS()}] Starting mainHack.js`)
+  ns.tail();
+  ns.disableLog('ALL');
+
+  ns.print(`[${localeHHMMSS()}] Starting mainHack.js`)
 
   let hostname = ns.getHostname()
 
@@ -156,7 +160,7 @@ export async function main(ns) {
     }
 
     if (!serverMap || new Date().getTime() - serverMap.lastUpdate > settings().mapRefreshInterval) {
-      ns.tprint(`[${localeHHMMSS()}] Spawning spider.js`)
+      ns.print(`[${localeHHMMSS()}] Spawning spider.js`)
       ns.spawn('spider.js', 1, 'mainHack.js')
       ns.exit()
       return
@@ -177,7 +181,7 @@ export async function main(ns) {
 
     let incompleateFlag = false
     while (await checkPreviousRunDone(ns, serverMap, hackableServers) == false) {
-      if (!incompleateFlag) ns.tprint("detected incompleate previous run!!!!!")
+      if (!incompleateFlag) ns.print("detected incompleate previous run!!!!!")
       incompleateFlag = true
       await ns.sleep(1000)
     }
@@ -199,7 +203,7 @@ export async function main(ns) {
     let weakenCycles = 0
     let multiRun = false
     let batchCount = 0
-    let batchInterval = 1000
+    let batchInterval = 180
 
     let action = 'weaken'
     if (securityLevel > serverMap.servers[bestTarget].minSecurityLevel + settings().minSecurityLevelOffset) {
@@ -223,12 +227,12 @@ export async function main(ns) {
 
 
     //outputing status
-    ns.tprint(`[${localeHHMMSS()}] Selected ${bestTarget} for a target. Planning to ${action} the server. `)
-    ns.tprint(`[${localeHHMMSS()}] Stock values: baseSecurity: ${serverMap.servers[bestTarget].baseSecurityLevel}; minSecurity: ${serverMap.servers[bestTarget].minSecurityLevel
+    ns.print(`[${localeHHMMSS()}] Selected ${bestTarget} for a target. Planning to ${action} the server. `)
+    ns.print(`[${localeHHMMSS()}] Stock values: baseSecurity: ${serverMap.servers[bestTarget].baseSecurityLevel}; minSecurity: ${serverMap.servers[bestTarget].minSecurityLevel
       }; maxMoney: $${numberWithCommas(parseInt(serverMap.servers[bestTarget].maxMoney, 10))}`)
-    ns.tprint(`[${localeHHMMSS()}] Current values: security: ${Math.floor(securityLevel * 1000) / 1000}; money: $${numberWithCommas(parseInt(money, 10))}`)
-    ns.tprint(`[${localeHHMMSS()}] Time to: hack: ${convertMSToHHMMSS(hackTime)}; grow: ${convertMSToHHMMSS(growTime)}; weaken: ${convertMSToHHMMSS(weakenTime)}`)
-    ns.tprint(`[${localeHHMMSS()}] Delays: ${convertMSToHHMMSS(hackDelay)} for hacks, ${convertMSToHHMMSS(growDelay)} for grows`)
+    ns.print(`[${localeHHMMSS()}] Current values: security: ${Math.floor(securityLevel * 1000) / 1000}; money: $${numberWithCommas(parseInt(money, 10))}`)
+    ns.print(`[${localeHHMMSS()}] Time to: hack: ${convertMSToHHMMSS(hackTime)}; grow: ${convertMSToHHMMSS(growTime)}; weaken: ${convertMSToHHMMSS(weakenTime)}`)
+    ns.print(`[${localeHHMMSS()}] Delays: ${convertMSToHHMMSS(hackDelay)} for hacks, ${convertMSToHHMMSS(growDelay)} for grows`)
 
 
 
@@ -245,7 +249,7 @@ export async function main(ns) {
         growCycles = 0
       }
 
-      ns.tprint(`[${localeHHMMSS()}] Cycles ratio: ${growCycles} grow cycles; ${weakenCycles} weaken cycles; expected security reduction: ${Math.floor(settings().changes.weaken * weakenCycles * 1000) / 1000}`)
+      ns.print(`[${localeHHMMSS()}] Cycles ratio: ${growCycles} grow cycles; ${weakenCycles} weaken cycles; expected security reduction: ${Math.floor(settings().changes.weaken * weakenCycles * 1000) / 1000}`)
 
       for (let i = 0; i < hackableServers.length; i++) {
         const server = serverMap.servers[hackableServers[i]]
@@ -267,7 +271,7 @@ export async function main(ns) {
       weakenCycles = weakenCyclesForGrow(growCycles)
       growCycles -= weakenCycles
 
-      ns.tprint(`[${localeHHMMSS()}] Cycles ratio: ${growCycles} grow cycles; ${weakenCycles} weaken cycles`)
+      ns.print(`[${localeHHMMSS()}] Cycles ratio: ${growCycles} grow cycles; ${weakenCycles} weaken cycles`)
 
       for (let i = 0; i < hackableServers.length; i++) {
         const server = serverMap.servers[hackableServers[i]]
@@ -287,7 +291,7 @@ export async function main(ns) {
       }
     } else { //action === 'hack'
       //should be set in findTargetServer defigned as const serverExtraData = {}
-      //ns.tprint("debug hackCycles: " + hackCycles +"serverExtraData[bestTarget].fullHackCycles: "+serverExtraData[bestTarget].fullHackCycles)
+      //ns.print("debug hackCycles: " + hackCycles +"serverExtraData[bestTarget].fullHackCycles: "+serverExtraData[bestTarget].fullHackCycles)
       if (hackCycles > serverExtraData[bestTarget].fullHackCycles) {
         hackCycles = serverExtraData[bestTarget].fullHackCycles
         let memMaxGrowWeaken = growCycles //max avaible grow and weaken cycles in ram
@@ -296,8 +300,7 @@ export async function main(ns) {
         let percentHacked = ns.hackAnalyze(bestTarget) * hackCycles *100
         //growthAnalyze(host: string, growthAmount: number, cores?: number): number; The amount of grow calls needed to grow the specified server by the specified amount
         let MaxGrowthCyclesNeededForHack = Math.ceil(ns.growthAnalyze(bestTarget, Math.ceil(100 / (100 - percentHacked))))
-        ns.tprint("percent hacked = " + percentHacked)
-        ns.tprint("percent hacked = " + Math.ceil(100/percentHacked))
+        ns.print("percent hacked = " + percentHacked)
         let maxWeakenCycles = Math.ceil(weakenCyclesForGrow(MaxGrowthCyclesNeededForHack) + weakenCyclesForHack(hackCycles))
         let growWeakenCyclesForMaxHack = MaxGrowthCyclesNeededForHack + maxWeakenCycles
         if (memMaxGrowWeaken > growWeakenCyclesForMaxHack) {
@@ -344,8 +347,10 @@ export async function main(ns) {
       let batchOverlap = Date.now() + hackDelay - batchInterval //batch interval is here to insure we have time for a full batch
 
 
-
-      ns.tprint(`[${localeHHMMSS()}]  Cycles ratio: ${hackCycles} hack cycles; ${growCycles} grow cycles; ${weakenCycles} weaken cycles`)
+      //ns.print("hack landing ms: " + (hackDelay + hackTime))
+      //ns.print("grow landing ms: " + (growDelay + growTime))
+      //ns.print("weak landing ms: " + weakenTime)
+      ns.print(`[${localeHHMMSS()}]  Cycles ratio: ${hackCycles} hack cycles; ${growCycles} grow cycles; ${weakenCycles} weaken cycles`)
 
       for (let i = 0; i < hackableServers.length; i++) {
         const server = serverMap.servers[hackableServers[i]]
@@ -356,7 +361,7 @@ export async function main(ns) {
         const server = serverMap.servers[hackableServers[i]]
 
         if (Date.now() + (batchCount * batchInterval) > batchOverlap) {
-          ns.tprint("breaking batching as we are overrunning max batch time")
+          ns.print("breaking batching as we are overrunning max batch time")
           break;
         } //we are going to start overlapping hacks no good
         await ns.sleep(10)
@@ -366,7 +371,7 @@ export async function main(ns) {
             let serverBatchCount = Math.max(0, Math.floor(server.ram / batch.totalMemRequired))
             while (serverBatchCount > 0) {
               if (Date.now() + (batchCount * batchInterval) > batchOverlap) {
-                ns.tprint("breaking batching as we are overrunning max batch time")
+                ns.print("breaking batching as we are overrunning max batch time")
                 break;
               }
               batchCount += 1
@@ -404,7 +409,7 @@ export async function main(ns) {
           }
         }
       }
-      ns.tprint(`[${localeHHMMSS()}] server memory to batch ${batch.totalMemRequired} batch's run: ${batchCount} Will wake up around ${localeHHMMSS(new Date().getTime() + weakenTime + 300)} `)
+      ns.print(`[${localeHHMMSS()}] server memory to batch ${batch.totalMemRequired} batch's run: ${batchCount} Will wake up around ${localeHHMMSS(new Date().getTime() + weakenTime + 300)} `)
     }
 
     //await ns.kill('monitor.js', 'home', bestTarget)
