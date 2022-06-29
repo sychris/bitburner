@@ -354,7 +354,7 @@ export async function main(ns) {
 
       for (let i = 0; i < hackableServers.length; i++) {
         const server = serverMap.servers[hackableServers[i]]
-        if (server.ram > batch.totalMemRequired) batchesRunning = true
+        if (server.ram  -  ns.getServerUsedRam(server.host) > batch.totalMemRequired) batchesRunning = true
       }
 
       for (let i = 0; i < hackableServers.length; i++) {
@@ -366,9 +366,9 @@ export async function main(ns) {
         } //we are going to start overlapping hacks no good
         await ns.sleep(10)
         if (batchesRunning) {
-          if (server.ram > batch.totalMemRequired) {
+          if (server.ram  -  ns.getServerUsedRam(server.host) > batch.totalMemRequired) {
 
-            let serverBatchCount = Math.max(0, Math.floor(server.ram / batch.totalMemRequired))
+            let serverBatchCount = Math.max(0, Math.floor((server.ram  -  ns.getServerUsedRam(server.host))/ batch.totalMemRequired))
             while (serverBatchCount > 0) {
               if (Date.now() + (batchCount * batchInterval) > batchOverlap) {
                 ns.print("breaking batching as we are overrunning max batch time")
@@ -382,7 +382,7 @@ export async function main(ns) {
           }
         } else { //we are not able to fit a batch in a server so just a partial will have to do
 
-          let cyclesFittable = Math.max(0, Math.floor(server.ram / 1.7))
+          let cyclesFittable = Math.max(0, Math.floor((server.ram  -  ns.getServerUsedRam(server.host)) / 1.7))
           const cyclesToRun = Math.max(0, Math.min(cyclesFittable, hackCycles))
           if (hackCycles) {
             if(cyclesToRun > 0)await ns.exec('hack.js', server.host, cyclesToRun, bestTarget, cyclesToRun, hackDelay, createUUID())
@@ -390,7 +390,7 @@ export async function main(ns) {
             cyclesFittable -= cyclesToRun
           }
 
-          const freeRam = server.ram - cyclesToRun * 1.7
+          const freeRam = (server.ram  -  ns.getServerUsedRam(server.host)) - cyclesToRun * 1.7
           cyclesFittable = Math.max(0, Math.floor(freeRam / 1.75))
 
           if (cyclesFittable && growCycles) {
