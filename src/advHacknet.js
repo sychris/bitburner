@@ -9,11 +9,14 @@ var formatter = new Intl.NumberFormat('en-US', {
 //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
 //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
 
+const buy_money = false
 
 export async function main(ns) {
     ns.disableLog("sleep")
+    
     while (true) {
         ns.clearLog()
+        if(buy_money)ns.hacknet.spendHashes("Sell for Money");
         ns.print("this script is not yet fully tested")
         ns.print("you own: " + ns.hacknet.numNodes() + " of " + ns.hacknet.maxNumNodes() + " possible nodes.")
         ns.print("currently stored hashes: " + ns.hacknet.numHashes() + " capacity: " + ns.hacknet.hashCapacity())
